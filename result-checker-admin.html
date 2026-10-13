@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Result Checker</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 1.5rem; margin: 0; }
+  h2 { font-size: 1.1rem; margin: 0 0 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; }
+  input, select {
+    padding: 10px 12px; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; min-width: 0;
+  }
+  input:focus { border-color: #2563eb; }
+  button {
+    padding: 10px 16px; font-size: 0.95rem; border: none; border-radius: 8px;
+    background: #2563eb; color: #fff; cursor: pointer;
+  }
+  button:hover { background: #1d4ed8; }
+  button.secondary { background: #e2e8f0; color: #1e293b; }
+  button.secondary:hover { background: #cbd5e1; }
+  button.danger { background: #dc2626; }
+  button.danger:hover { background: #b91c1c; }
+  button.small { padding: 6px 10px; font-size: 0.85rem; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .row input { flex: 1; min-width: 120px; }
+  .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .grid-form label { display: flex; flex-direction: column; font-size: 0.8rem; color: #64748b; gap: 4px; }
+  .subject-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .subject-row input.sname { flex: 2; }
+  .subject-row input.smarks { flex: 1; max-width: 120px; }
+  .error { color: #b91c1c; margin-top: 10px; font-size: 0.9rem; min-height: 1em; }
+  .ok { color: #15803d; margin-top: 10px; font-size: 0.9rem; min-height: 1em; }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .info-item { background: #f8fafc; padding: 12px; border-radius: 8px; }
+  .label { font-size: 0.8rem; color: #64748b; }
+  .value { font-size: 1.05rem; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.92rem; }
+  th { font-size: 0.82rem; color: #64748b; font-weight: 600; }
+  td.num, th.num { text-align: right; }
+  tr.fail-row td { color: #b91c1c; }
+  .summary { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  .badge { display: inline-block; padding: 8px 18px; border-radius: 999px; font-weight: 700; color: #fff; }
+  .pass { background: #16a34a; }
+  .fail { background: #dc2626; }
+  .note { font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 12px; }
+  .hidden { display: none !important; }
+  .student-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; gap: 8px; flex-wrap: wrap; }
+  .student-item .meta { font-size: 0.85rem; color: #64748b; }
+  .actions { display: flex; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Result Checker</h1>
+    <button id="toggleViewBtn" class="secondary">Admin Panel</button>
+  </header>
+
+  <!-- ===== PUBLIC VIEW: result search ===== -->
+  <section id="publicView">
+    <div class="card">
+      <div class="row">
+        <input id="query" type="text" placeholder="Roll number ya naam likhein" autocomplete="off" style="flex:1">
+        <button id="searchBtn">Result dekhein</button>
+      </div>
+      <div id="searchError" class="error"></div>
+    </div>
+    <div id="resultArea"></div>
+    <p class="note">Result sirf dekhne ke liye hai. Official result ke liye college portal check karein.</p>
+  </section>
+
+  <!-- ===== ADMIN VIEW ===== -->
+  <section id="adminView" class="hidden">
+    <!-- Login -->
+    <div id="loginCard" class="card">
+      <h2>Admin Login</h2>
+      <div class="row">
+        <input id="adminPass" type="password" placeholder="Admin password">
+        <button id="loginBtn">Login</button>
+      </div>
+      <div id="loginError" class="error"></div>
+    </div>
+
+    <!-- Panel (after login) -->
+    <div id="adminPanel" class="hidden">
+      <div class="card">
+        <h2 id="formTitle">Naya student add karein</h2>
+        <div class="grid-form">
+          <label>Roll Number *<input id="fRoll" type="text"></label>
+          <label>Naam *<input id="fName" type="text"></label>
+          <label>Course<input id="fCourse" type="text"></label>
+          <label>Semester<input id="fSem" type="text"></label>
+          <label>Branch *
+            <select id="fBranch">
+              <option value="">-- Branch chunein --</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="CSE">CSE</option>
+            </select>
+          </label>
+        </div>
+
+        <h2 style="margin-top:16px">Subjects aur marks</h2>
+        <div id="subjectRows"></div>
+        <div class="row" style="margin-top:8px">
+          <button id="addSubjectBtn" class="secondary small">+ Subject add karein</button>
+        </div>
+
+        <div class="row" style="margin-top:16px">
+          <button id="saveStudentBtn">Save karein</button>
+          <button id="cancelEditBtn" class="secondary hidden">Cancel</button>
+        </div>
+        <div id="formError" class="error"></div>
+        <div id="formOk" class="ok"></div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between; margin-bottom:8px">
+          <h2 style="margin:0">Saare students (<span id="count">0</span>)</h2>
+          <div class="actions">
+            <button id="exportBtn" class="secondary small">Backup (Export)</button>
+            <label class="secondary small" style="padding:6px 10px; border-radius:8px; background:#e2e8f0; cursor:pointer; font-size:0.85rem">
+              Restore (Import)
+              <input id="importFile" type="file" accept="application/json" class="hidden">
+            </label>
+          </div>
+        </div>
+        <input id="listSearch" type="text" placeholder="List mein search karein" style="width:100%; margin-bottom:8px">
+        <div id="studentList"></div>
+      </div>
+
+      <div class="row">
+        <button id="logoutBtn" class="secondary">Logout</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ====== SETTINGS: yahan password badlein ======
+  const CONFIG = {
+    adminPassword: "admi@0110",
+    subjectTypes: {
+      theory:    { label: "Theory",    max: 60, pass: 20 },
+      practical: { label: "Practical", max: 40, pass: 20 }
+    }
+  };
+
+  function typeOf(sub) {
+    return CONFIG.subjectTypes[sub.type] || CONFIG.subjectTypes.theory;
+  }
+  function getTypeKey(sub) {
+    return CONFIG.subjectTypes[sub.type] ? sub.type : "theory";
+  }
+  // ==============================================
+
+  const STORAGE_KEY = "resultData";
+  let students = [];
+  let editingRoll = null;
+
+  const $ = (id) => document.getElementById(id);
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function loadData() {
+    try { students = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+    catch { students = []; }
+  }
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+  }
+
+  function getGrade(pct) {
+    if (pct >= 90) return "A+";
+    if (pct >= 80) return "A";
+    if (pct >= 70) return "B";
+    if (pct >= 60) return "C";
+    if (pct >= 50) return "D";
+    if (pct >= 40) return "E";
+    return "F";
+  }
+
+  /* ---------- PUBLIC: search & result ---------- */
+  function findStudent(q) {
+    const term = q.trim().toLowerCase();
+    if (!term) return null;
+    return students.find(s => String(s.roll).toLowerCase() === term)
+        || students.find(s => s.name.toLowerCase() === term)
+        || students.find(s => s.name.toLowerCase().includes(term));
+  }
+
+  function renderResult(student) {
+    const subs = student.subjects.map(s => ({ ...s, t: typeOf(s) }));
+    const total = subs.reduce((sum, s) => sum + Number(s.marks), 0);
+    const max = subs.reduce((sum, s) => sum + s.t.max, 0);
+    const pct = max ? (total / max) * 100 : 0;
+    const failed = subs.filter(s => Number(s.marks) < s.t.pass);
+    const passed = failed.length === 0;
+
+    const rows = subs.map(s => {
+      const m = Number(s.marks);
+      const isFail = m < s.t.pass;
+      return `<tr class="${isFail ? "fail-row" : ""}">
+        <td>${esc(s.name)} <span style="color:#64748b;font-size:0.8rem">(${s.t.label})</span></td>
+        <td class="num">${m} / ${s.t.max}</td>
+        <td class="num">${getGrade((m / s.t.max) * 100)}</td>
+        <td class="num">${isFail ? "Fail" : "Pass"}</td>
+      </tr>`;
+    }).join("");
+
+    $("resultArea").innerHTML = `
+      <div class="card">
+        <div class="info-grid">
+          <div class="info-item"><div class="label">Naam</div><div class="value">${esc(student.name)}</div></div>
+          <div class="info-item"><div class="label">Roll Number</div><div class="value">${esc(student.roll)}</div></div>
+          <div class="info-item"><div class="label">Branch</div><div class="value">${esc(student.branch || "-")}</div></div>
+          <div class="info-item"><div class="label">Course</div><div class="value">${esc(student.course || "-")}</div></div>
+          <div class="info-item"><div class="label">Semester</div><div class="value">${esc(student.semester || "-")}</div></div>
+        </div>
+        <table>
+          <thead><tr><th>Subject</th><th class="num">Marks</th><th class="num">Grade</th><th class="num">Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="summary">
+          <div>
+            <div class="label">Total</div>
+            <div class="value">${total} / ${max}</div>
+            <div class="label">Percentage: ${pct.toFixed(2)}%</div>
+          </div>
+          <span class="badge ${passed ? "pass" : "fail"}">
+            ${passed ? "PASS" : "FAIL (" + failed.length + " subject" + (failed.length > 1 ? "s" : "") + ")"}
+          </span>
+        </div>
+      </div>`;
+  }
+
+  function search() {
+    const q = $("query").value;
+    if (!q.trim()) {
+      $("searchError").textContent = "Pehle roll number ya naam likhein.";
+      $("resultArea").innerHTML = "";
+      return;
+    }
+    const s = findStudent(q);
+    if (!s) {
+      $("searchError").textContent = "Is roll number ya naam ka koi record nahi mila.";
+      $("resultArea").innerHTML = "";
+      return;
+    }
+    $("searchError").textContent = "";
+    renderResult(s);
+  }
+
+  /* ---------- ADMIN: subject rows ---------- */
+  function addSubjectRow(name = "", marks = "", type = "theory") {
+    const div = document.createElement("div");
+    div.className = "subject-row";
+    const options = Object.entries(CONFIG.subjectTypes).map(([key, t]) =>
+      `<option value="${key}" ${key === type ? "selected" : ""}>${t.label} (${t.max})</option>`
+    ).join("");
+    div.innerHTML = `
+      <input class="sname" type="text" placeholder="Subject ka naam" value="${esc(name)}">
+      <select class="stype">${options}</select>
+      <input class="smarks" type="number" min="0" placeholder="Marks" value="${esc(marks)}">
+      <button class="danger small remove-subject" type="button">X</button>`;
+    $("subjectRows").appendChild(div);
+  }
+
+  function resetForm() {
+    editingRoll = null;
+    $("fRoll").value = "";
+    $("fRoll").disabled = false;
+    $("fName").value = "";
+    $("fCourse").value = "";
+    $("fSem").value = "";
+    $("fBranch").value = "";
+    $("subjectRows").innerHTML = "";
+    addSubjectRow();
+    $("formTitle").textContent = "Naya student add karein";
+    $("cancelEditBtn").classList.add("hidden");
+    $("formError").textContent = "";
+  }
+
+  function saveStudent() {
+    $("formError").textContent = "";
+    $("formOk").textContent = "";
+
+    const roll = $("fRoll").value.trim();
+    const name = $("fName").value.trim();
+    const branch = $("fBranch").value;
+    if (!roll || !name || !branch) {
+      $("formError").textContent = "Roll number, naam aur branch zaroori hain.";
+      return;
+    }
+
+    const subjects = [];
+    const rows = $("subjectRows").querySelectorAll(".subject-row");
+    for (const row of rows) {
+      const sname = row.querySelector(".sname").value.trim();
+      const marksRaw = row.querySelector(".smarks").value.trim();
+      if (!sname && !marksRaw) continue;
+      const type = row.querySelector(".stype").value;
+      const max = CONFIG.subjectTypes[type].max;
+      const marks = Number(marksRaw);
+      if (!sname || marksRaw === "" || isNaN(marks) || marks < 0 || marks > max) {
+        $("formError").textContent = `Subject "${sname || "(naam nahi)"}" ke marks 0 se ${max} ke beech hone chahiye.`;
+        return;
+      }
+      subjects.push({ name: sname, type, marks });
+    }
+    if (subjects.length === 0) {
+      $("formError").textContent = "Kam se kam ek subject add karein.";
+      return;
+    }
+
+    const existingIndex = students.findIndex(s => String(s.roll) === roll);
+    if (existingIndex >= 0 && editingRoll === null) {
+      if (!confirm(`Roll ${roll} pehle se hai. Kya usko update karna hai?`)) return;
+    }
+
+    const record = {
+      roll,
+      name,
+      branch,
+      course: $("fCourse").value.trim(),
+      semester: $("fSem").value.trim(),
+      subjects
+    };
+
+    if (existingIndex >= 0) students[existingIndex] = record;
+    else students.push(record);
+
+    students.sort((a, b) => String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true }));
+    saveData();
+    renderList();
+    const wasEdit = editingRoll !== null;
+    resetForm();
+    $("formOk").textContent = wasEdit ? "Student update ho gaya." : "Student save ho gaya.";
+  }
+
+  function editStudent(roll) {
+    const s = students.find(x => String(x.roll) === roll);
+    if (!s) return;
+    editingRoll = roll;
+    $("fRoll").value = s.roll;
+    $("fRoll").disabled = true;
+    $("fName").value = s.name;
+    $("fCourse").value = s.course || "";
+    $("fSem").value = s.semester || "";
+    $("fBranch").value = s.branch || "";
+    $("subjectRows").innerHTML = "";
+    s.subjects.forEach(sub => addSubjectRow(sub.name, sub.marks, getTypeKey(sub)));
+    $("formTitle").textContent = `Edit: ${s.name} (Roll ${s.roll})`;
+    $("cancelEditBtn").classList.remove("hidden");
+    $("formOk").textContent = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function deleteStudent(roll) {
+    const s = students.find(x => String(x.roll) === roll);
+    if (!s) return;
+    if (!confirm(`${s.name} (Roll ${s.roll}) ka record delete karna hai?`)) return;
+    students = students.filter(x => String(x.roll) !== roll);
+    saveData();
+    renderList();
+    if (editingRoll === roll) resetForm();
+  }
+
+  function renderList() {
+    const q = $("listSearch").value.trim().toLowerCase();
+    const filtered = students.filter(s =>
+      !q || String(s.roll).toLowerCase().includes(q) || s.name.toLowerCase().includes(q)
+    );
+    $("count").textContent = students.length;
+    $("studentList").innerHTML = filtered.length === 0
+      ? `<p class="note">Koi student nahi mila.</p>`
+      : filtered.map(s => `
+        <div class="student-item">
+          <div>
+            <div><strong>${esc(s.name)}</strong> <span class="meta">| Roll ${esc(s.roll)}</span></div>
+            <div class="meta">${s.subjects.length} subjects${s.branch ? " | " + esc(s.branch) : ""}${s.course ? " | " + esc(s.course) : ""}${s.semester ? " | Sem " + esc(s.semester) : ""}</div>
+          </div>
+          <div class="actions">
+            <button class="secondary small edit-btn" data-roll="${esc(s.roll)}">Edit</button>
+            <button class="danger small del-btn" data-roll="${esc(s.roll)}">Delete</button>
+          </div>
+        </div>`).join("");
+  }
+
+  /* ---------- ADMIN: export / import ---------- */
+  function exportData() {
+    const blob = new Blob([JSON.stringify(students, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "results-backup.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function importData(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!Array.isArray(data)) throw new Error("bad");
+        if (!confirm("Ye file current data ko replace kar degi. Continue karein?")) return;
+        students = data;
+        saveData();
+        renderList();
+        $("formOk").textContent = "Backup restore ho gaya.";
+      } catch {
+        alert("Ye valid backup file nahi hai.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  /* ---------- VIEW & AUTH ---------- */
+  function showAdminView(show) {
+    $("publicView").classList.toggle("hidden", show);
+    $("adminView").classList.toggle("hidden", !show);
+    $("toggleViewBtn").textContent = show ? "Result page" : "Admin Panel";
+  }
+
+  function showLoggedIn(isIn) {
+    $("loginCard").classList.toggle("hidden", isIn);
+    $("adminPanel").classList.toggle("hidden", !isIn);
+    if (isIn) {
+      if ($("subjectRows").children.length === 0) resetForm();
+      renderList();
+    }
+  }
+
+  function login() {
+    if ($("adminPass").value === CONFIG.adminPassword) {
+      sessionStorage.setItem("isAdmin", "1");
+      $("adminPass").value = "";
+      $("loginError").textContent = "";
+      showLoggedIn(true);
+    } else {
+      $("loginError").textContent = "Galat password.";
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem("isAdmin");
+    showLoggedIn(false);
+  }
+
+  /* ---------- EVENTS ---------- */
+  $("searchBtn").addEventListener("click", search);
+  $("query").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+
+  $("toggleViewBtn").addEventListener("click", () => {
+    const goingAdmin = $("adminView").classList.contains("hidden");
+    showAdminView(goingAdmin);
+    if (goingAdmin) showLoggedIn(sessionStorage.getItem("isAdmin") === "1");
+  });
+
+  $("loginBtn").addEventListener("click", login);
+  $("adminPass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  $("logoutBtn").addEventListener("click", logout);
+
+  $("addSubjectBtn").addEventListener("click", () => addSubjectRow());
+  $("subjectRows").addEventListener("click", e => {
+    if (e.target.classList.contains("remove-subject")) {
+      e.target.closest(".subject-row").remove();
+    }
+  });
+  $("saveStudentBtn").addEventListener("click", saveStudent);
+  $("cancelEditBtn").addEventListener("click", resetForm);
+
+  $("studentList").addEventListener("click", e => {
+    const roll = e.target.dataset.roll;
+    if (!roll) return;
+    if (e.target.classList.contains("edit-btn")) editStudent(roll);
+    if (e.target.classList.contains("del-btn")) deleteStudent(roll);
+  });
+  $("listSearch").addEventListener("input", renderList);
+
+  $("exportBtn").addEventListener("click", exportData);
+  $("importFile").addEventListener("change", e => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+    e.target.value = "";
+  });
+
+  /* ---------- INIT ---------- */
+  loadData();
+</script>
+</body>
+</html>
