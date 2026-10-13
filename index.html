@@ -28,6 +28,7 @@
     background: #2563eb; color: #fff; cursor: pointer;
   }
   button:hover { background: #1d4ed8; }
+  button:disabled { opacity: 0.6; cursor: wait; }
   button.secondary { background: #e2e8f0; color: #1e293b; }
   button.secondary:hover { background: #cbd5e1; }
   button.danger { background: #dc2626; }
@@ -59,7 +60,8 @@
   .hidden { display: none !important; }
   .student-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; gap: 8px; flex-wrap: wrap; }
   .student-item .meta { font-size: 0.85rem; color: #64748b; }
-  .actions { display: flex; gap: 6px; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .file-btn { padding: 6px 10px; border-radius: 8px; background: #e2e8f0; color: #1e293b; cursor: pointer; font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -69,7 +71,7 @@
     <button id="toggleViewBtn" class="secondary">Admin Panel</button>
   </header>
 
-  <!-- ===== PUBLIC VIEW: result search ===== -->
+  <!-- ===== PUBLIC VIEW ===== -->
   <section id="publicView">
     <div class="card">
       <div class="row">
@@ -84,17 +86,18 @@
 
   <!-- ===== ADMIN VIEW ===== -->
   <section id="adminView" class="hidden">
-    <!-- Login -->
     <div id="loginCard" class="card">
       <h2>Admin Login</h2>
+      <div class="grid-form">
+        <label>Email<input id="adminEmail" type="email" autocomplete="username"></label>
+        <label>Password<input id="adminPass" type="password" autocomplete="current-password"></label>
+      </div>
       <div class="row">
-        <input id="adminPass" type="password" placeholder="Admin password">
         <button id="loginBtn">Login</button>
       </div>
       <div id="loginError" class="error"></div>
     </div>
 
-    <!-- Panel (after login) -->
     <div id="adminPanel" class="hidden">
       <div class="card">
         <h2 id="formTitle">Naya student add karein</h2>
@@ -132,8 +135,7 @@
           <h2 style="margin:0">Saare students (<span id="count">0</span>)</h2>
           <div class="actions">
             <button id="exportBtn" class="secondary small">Backup (Export)</button>
-            <label class="secondary small" style="padding:6px 10px; border-radius:8px; background:#e2e8f0; cursor:pointer; font-size:0.85rem">
-              Restore (Import)
+            <label class="file-btn">Restore (Import)
               <input id="importFile" type="file" accept="application/json" class="hidden">
             </label>
           </div>
@@ -149,40 +151,52 @@
   </section>
 </div>
 
-<script>
-  // ====== SETTINGS: yahan password badlein ======
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ====== FIREBASE CONFIG ======
+  const firebaseConfig = {
+    apiKey: "AIzaSyACP6AT-IZsu4spY-wxfsLxbD28hN3b69I",
+    authDomain: "result-check-58799.firebaseapp.com",
+    projectId: "result-check-58799",
+    storageBucket: "result-check-58799.firebasestorage.app",
+    messagingSenderId: "290537027389",
+    appId: "1:290537027389:web:ada427736258a51936f754",
+    measurementId: "G-ZBHN1HFF69"
+  };
+
+  // ====== SUBJECT SETTINGS ======
   const CONFIG = {
-    adminPassword: "admi@0110",
     subjectTypes: {
       theory:    { label: "Theory",    max: 60, pass: 20 },
       practical: { label: "Practical", max: 40, pass: 20 }
     }
   };
 
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const STUDENTS_COL = "students";
+
+  let students = [];
+  let editingRoll = null;
+  let adminViewOpen = false;
+
+  const $ = (id) => document.getElementById(id);
+
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
   function typeOf(sub) {
     return CONFIG.subjectTypes[sub.type] || CONFIG.subjectTypes.theory;
   }
   function getTypeKey(sub) {
     return CONFIG.subjectTypes[sub.type] ? sub.type : "theory";
-  }
-  // ==============================================
-
-  const STORAGE_KEY = "resultData";
-  let students = [];
-  let editingRoll = null;
-
-  const $ = (id) => document.getElementById(id);
-
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  }
-
-  function loadData() {
-    try { students = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-    catch { students = []; }
-  }
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
   }
 
   function getGrade(pct) {
@@ -195,17 +209,29 @@
     return "F";
   }
 
+  /* ---------- LIVE DATA FROM FIRESTORE ---------- */
+  onSnapshot(collection(db, STUDENTS_COL), snap => {
+    students = snap.docs
+      .map(d => ({ ...d.data(), roll: d.id }))
+      .sort((a, b) => String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true }));
+    renderList();
+    if ($("query").value.trim()) search();
+  }, err => {
+    $("searchError").textContent = "Data load nahi ho paaya. Internet ya Firebase rules check karein.";
+    console.error(err);
+  });
+
   /* ---------- PUBLIC: search & result ---------- */
   function findStudent(q) {
     const term = q.trim().toLowerCase();
     if (!term) return null;
     return students.find(s => String(s.roll).toLowerCase() === term)
-        || students.find(s => s.name.toLowerCase() === term)
-        || students.find(s => s.name.toLowerCase().includes(term));
+        || students.find(s => (s.name || "").toLowerCase() === term)
+        || students.find(s => (s.name || "").toLowerCase().includes(term));
   }
 
   function renderResult(student) {
-    const subs = student.subjects.map(s => ({ ...s, t: typeOf(s) }));
+    const subs = (student.subjects || []).map(s => ({ ...s, t: typeOf(s) }));
     const total = subs.reduce((sum, s) => sum + Number(s.marks), 0);
     const max = subs.reduce((sum, s) => sum + s.t.max, 0);
     const pct = max ? (total / max) * 100 : 0;
@@ -296,21 +322,16 @@
     $("formError").textContent = "";
   }
 
-  function saveStudent() {
-    $("formError").textContent = "";
-    $("formOk").textContent = "";
-
+  function buildRecord() {
     const roll = $("fRoll").value.trim();
     const name = $("fName").value.trim();
     const branch = $("fBranch").value;
     if (!roll || !name || !branch) {
-      $("formError").textContent = "Roll number, naam aur branch zaroori hain.";
-      return;
+      return { error: "Roll number, naam aur branch zaroori hain." };
     }
 
     const subjects = [];
-    const rows = $("subjectRows").querySelectorAll(".subject-row");
-    for (const row of rows) {
+    for (const row of $("subjectRows").querySelectorAll(".subject-row")) {
       const sname = row.querySelector(".sname").value.trim();
       const marksRaw = row.querySelector(".smarks").value.trim();
       if (!sname && !marksRaw) continue;
@@ -318,39 +339,49 @@
       const max = CONFIG.subjectTypes[type].max;
       const marks = Number(marksRaw);
       if (!sname || marksRaw === "" || isNaN(marks) || marks < 0 || marks > max) {
-        $("formError").textContent = `Subject "${sname || "(naam nahi)"}" ke marks 0 se ${max} ke beech hone chahiye.`;
-        return;
+        return { error: `Subject "${sname || "(naam nahi)"}" ke marks 0 se ${max} ke beech hone chahiye.` };
       }
       subjects.push({ name: sname, type, marks });
     }
-    if (subjects.length === 0) {
-      $("formError").textContent = "Kam se kam ek subject add karein.";
-      return;
-    }
+    if (subjects.length === 0) return { error: "Kam se kam ek subject add karein." };
 
-    const existingIndex = students.findIndex(s => String(s.roll) === roll);
-    if (existingIndex >= 0 && editingRoll === null) {
-      if (!confirm(`Roll ${roll} pehle se hai. Kya usko update karna hai?`)) return;
-    }
-
-    const record = {
-      roll,
-      name,
-      branch,
-      course: $("fCourse").value.trim(),
-      semester: $("fSem").value.trim(),
-      subjects
+    return {
+      record: {
+        roll,
+        name,
+        branch,
+        course: $("fCourse").value.trim(),
+        semester: $("fSem").value.trim(),
+        subjects
+      }
     };
+  }
 
-    if (existingIndex >= 0) students[existingIndex] = record;
-    else students.push(record);
+  async function saveStudent() {
+    $("formError").textContent = "";
+    $("formOk").textContent = "";
 
-    students.sort((a, b) => String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true }));
-    saveData();
-    renderList();
+    const { record, error } = buildRecord();
+    if (error) { $("formError").textContent = error; return; }
+
+    const exists = students.some(s => String(s.roll) === record.roll);
+    if (exists && editingRoll === null) {
+      if (!confirm(`Roll ${record.roll} pehle se hai. Kya usko update karna hai?`)) return;
+    }
+
     const wasEdit = editingRoll !== null;
-    resetForm();
-    $("formOk").textContent = wasEdit ? "Student update ho gaya." : "Student save ho gaya.";
+    const btn = $("saveStudentBtn");
+    btn.disabled = true;
+    try {
+      await setDoc(doc(db, STUDENTS_COL, record.roll), record);
+      resetForm();
+      $("formOk").textContent = wasEdit ? "Student update ho gaya." : "Student save ho gaya.";
+    } catch (e) {
+      console.error(e);
+      $("formError").textContent = "Save nahi ho paaya. Login check karein ya internet.";
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   function editStudent(roll) {
@@ -359,41 +390,44 @@
     editingRoll = roll;
     $("fRoll").value = s.roll;
     $("fRoll").disabled = true;
-    $("fName").value = s.name;
+    $("fName").value = s.name || "";
     $("fCourse").value = s.course || "";
     $("fSem").value = s.semester || "";
     $("fBranch").value = s.branch || "";
     $("subjectRows").innerHTML = "";
-    s.subjects.forEach(sub => addSubjectRow(sub.name, sub.marks, getTypeKey(sub)));
+    (s.subjects || []).forEach(sub => addSubjectRow(sub.name, sub.marks, getTypeKey(sub)));
     $("formTitle").textContent = `Edit: ${s.name} (Roll ${s.roll})`;
     $("cancelEditBtn").classList.remove("hidden");
     $("formOk").textContent = "";
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function deleteStudent(roll) {
+  async function deleteStudent(roll) {
     const s = students.find(x => String(x.roll) === roll);
     if (!s) return;
     if (!confirm(`${s.name} (Roll ${s.roll}) ka record delete karna hai?`)) return;
-    students = students.filter(x => String(x.roll) !== roll);
-    saveData();
-    renderList();
-    if (editingRoll === roll) resetForm();
+    try {
+      await deleteDoc(doc(db, STUDENTS_COL, roll));
+      if (editingRoll === roll) resetForm();
+    } catch (e) {
+      console.error(e);
+      alert("Delete nahi ho paaya. Login check karein.");
+    }
   }
 
   function renderList() {
+    $("count").textContent = students.length;
     const q = $("listSearch").value.trim().toLowerCase();
     const filtered = students.filter(s =>
-      !q || String(s.roll).toLowerCase().includes(q) || s.name.toLowerCase().includes(q)
+      !q || String(s.roll).toLowerCase().includes(q) || (s.name || "").toLowerCase().includes(q)
     );
-    $("count").textContent = students.length;
     $("studentList").innerHTML = filtered.length === 0
       ? `<p class="note">Koi student nahi mila.</p>`
       : filtered.map(s => `
         <div class="student-item">
           <div>
             <div><strong>${esc(s.name)}</strong> <span class="meta">| Roll ${esc(s.roll)}</span></div>
-            <div class="meta">${s.subjects.length} subjects${s.branch ? " | " + esc(s.branch) : ""}${s.course ? " | " + esc(s.course) : ""}${s.semester ? " | Sem " + esc(s.semester) : ""}</div>
+            <div class="meta">${(s.subjects || []).length} subjects${s.branch ? " | " + esc(s.branch) : ""}${s.course ? " | " + esc(s.course) : ""}${s.semester ? " | Sem " + esc(s.semester) : ""}</div>
           </div>
           <div class="actions">
             <button class="secondary small edit-btn" data-roll="${esc(s.roll)}">Edit</button>
@@ -404,7 +438,8 @@
 
   /* ---------- ADMIN: export / import ---------- */
   function exportData() {
-    const blob = new Blob([JSON.stringify(students, null, 2)], { type: "application/json" });
+    const data = students.map(({ roll, ...rest }) => ({ roll, ...rest }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "results-backup.json";
@@ -412,69 +447,82 @@
     URL.revokeObjectURL(a.href);
   }
 
-  function importData(file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(reader.result);
-        if (!Array.isArray(data)) throw new Error("bad");
-        if (!confirm("Ye file current data ko replace kar degi. Continue karein?")) return;
-        students = data;
-        saveData();
-        renderList();
-        $("formOk").textContent = "Backup restore ho gaya.";
-      } catch {
-        alert("Ye valid backup file nahi hai.");
+  async function importData(file) {
+    let data;
+    try {
+      data = JSON.parse(await file.text());
+      if (!Array.isArray(data)) throw new Error("bad");
+    } catch {
+      alert("Ye valid backup file nahi hai.");
+      return;
+    }
+    if (!confirm(`${data.length} students Firebase mein add/update honge. Continue karein?`)) return;
+
+    try {
+      const CHUNK = 400;
+      for (let i = 0; i < data.length; i += CHUNK) {
+        const batch = writeBatch(db);
+        data.slice(i, i + CHUNK).forEach(s => {
+          const roll = String(s.roll);
+          batch.set(doc(db, STUDENTS_COL, roll), { ...s, roll });
+        });
+        await batch.commit();
       }
-    };
-    reader.readAsText(file);
+      $("formOk").textContent = "Backup import ho gaya.";
+    } catch (e) {
+      console.error(e);
+      alert("Import nahi ho paaya. Login check karein.");
+    }
   }
 
   /* ---------- VIEW & AUTH ---------- */
   function showAdminView(show) {
+    adminViewOpen = show;
     $("publicView").classList.toggle("hidden", show);
     $("adminView").classList.toggle("hidden", !show);
     $("toggleViewBtn").textContent = show ? "Result page" : "Admin Panel";
+    if (show) refreshAdminUI();
   }
 
-  function showLoggedIn(isIn) {
-    $("loginCard").classList.toggle("hidden", isIn);
-    $("adminPanel").classList.toggle("hidden", !isIn);
-    if (isIn) {
+  function refreshAdminUI() {
+    const loggedIn = !!auth.currentUser;
+    $("loginCard").classList.toggle("hidden", loggedIn);
+    $("adminPanel").classList.toggle("hidden", !loggedIn);
+    if (loggedIn) {
       if ($("subjectRows").children.length === 0) resetForm();
       renderList();
     }
   }
 
-  function login() {
-    if ($("adminPass").value === CONFIG.adminPassword) {
-      sessionStorage.setItem("isAdmin", "1");
-      $("adminPass").value = "";
-      $("loginError").textContent = "";
-      showLoggedIn(true);
-    } else {
-      $("loginError").textContent = "Galat password.";
-    }
-  }
+  onAuthStateChanged(auth, () => {
+    if (adminViewOpen) refreshAdminUI();
+  });
 
-  function logout() {
-    sessionStorage.removeItem("isAdmin");
-    showLoggedIn(false);
+  async function login() {
+    $("loginError").textContent = "";
+    const email = $("adminEmail").value.trim();
+    const pass = $("adminPass").value;
+    if (!email || !pass) {
+      $("loginError").textContent = "Email aur password dono likhein.";
+      return;
+    }
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      $("adminPass").value = "";
+    } catch {
+      $("loginError").textContent = "Email ya password galat hai.";
+    }
   }
 
   /* ---------- EVENTS ---------- */
   $("searchBtn").addEventListener("click", search);
   $("query").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
 
-  $("toggleViewBtn").addEventListener("click", () => {
-    const goingAdmin = $("adminView").classList.contains("hidden");
-    showAdminView(goingAdmin);
-    if (goingAdmin) showLoggedIn(sessionStorage.getItem("isAdmin") === "1");
-  });
+  $("toggleViewBtn").addEventListener("click", () => showAdminView(!adminViewOpen));
 
   $("loginBtn").addEventListener("click", login);
   $("adminPass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
-  $("logoutBtn").addEventListener("click", logout);
+  $("logoutBtn").addEventListener("click", () => signOut(auth));
 
   $("addSubjectBtn").addEventListener("click", () => addSubjectRow());
   $("subjectRows").addEventListener("click", e => {
@@ -498,9 +546,6 @@
     if (e.target.files[0]) importData(e.target.files[0]);
     e.target.value = "";
   });
-
-  /* ---------- INIT ---------- */
-  loadData();
 </script>
 </body>
 </html>
