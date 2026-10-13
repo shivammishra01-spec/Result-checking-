@@ -68,7 +68,10 @@
 <div class="container">
   <header>
     <h1>Result Checker</h1>
-    <button id="toggleViewBtn" class="secondary">Admin Panel</button>
+    <div class="actions">
+      <button id="practiceBtn" class="secondary">Important Questions</button>
+      <button id="toggleViewBtn" class="secondary">Admin Panel</button>
+    </div>
   </header>
 
   <!-- ===== PUBLIC VIEW ===== -->
@@ -82,6 +85,16 @@
     </div>
     <div id="resultArea"></div>
     <p class="note">Result sirf dekhne ke liye hai. Official result ke liye college portal check karein.</p>
+  </section>
+
+  <!-- ===== IMPORTANT QUESTIONS (public practice page) ===== -->
+  <section id="practiceView" class="hidden">
+    <div class="card">
+      <h2>Important Questions (Practice)</h2>
+      <select id="practiceSubject" style="width:100%; margin-bottom:12px"><option value="">Sab subjects</option></select>
+      <div id="practiceList"></div>
+    </div>
+    <p class="note">Ye practice ke liye hain. Exam mein kya aayega, ye pakka nahi hai.</p>
   </section>
 
   <!-- ===== ADMIN VIEW ===== -->
@@ -100,6 +113,20 @@
 
     <div id="adminPanel" class="hidden">
       <div class="card">
+        <h2>Important Questions add karein</h2>
+        <div class="grid-form">
+          <label>Subject *<input id="qSubject" type="text" placeholder="jaise DBMS"></label>
+        </div>
+        <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">Question *
+          <textarea id="qText" rows="3" style="padding:10px 12px; font-size:0.95rem; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit"></textarea>
+        </label>
+        <div class="row" style="margin-top:10px"><button id="addQuestionBtn">Question add karein</button></div>
+        <div id="qError" class="error"></div>
+        <h2 style="margin-top:16px">Saare questions (<span id="qCount">0</span>)</h2>
+        <div id="qAdminList"></div>
+      </div>
+
+      <div class="card">
         <h2 id="formTitle">Naya student add karein</h2>
         <div class="grid-form">
           <label>Roll Number *<input id="fRoll" type="text"></label>
@@ -115,6 +142,14 @@
             </select>
           </label>
         </div>
+
+        <h2 style="margin-top:16px">Mock Test (ek paper)</h2>
+        <div class="grid-form">
+          <label>Paper ka naam<input id="mName" type="text" placeholder="jaise Mock Test 1"></label>
+          <label>Max marks<input id="mMax" type="number" min="1" value="100"></label>
+          <label>Marks mile<input id="mMarks" type="number" min="0"></label>
+        </div>
+        <p class="note" style="text-align:left;margin:0 0 12px">Mock test khali chhodna ho to naam aur marks dono khali rakhein.</p>
 
         <h2 style="margin-top:16px">Subjects aur marks</h2>
         <div id="subjectRows"></div>
@@ -155,7 +190,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot, writeBatch }
+  import { getFirestore, collection, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot, writeBatch }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ====== FIREBASE CONFIG ======
@@ -181,6 +216,8 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
   const STUDENTS_COL = "students";
+  const QUESTIONS_COL = "questions";
+  let questions = [];
 
   let students = [];
   let editingRoll = null;
@@ -208,6 +245,16 @@
     if (pct >= 40) return "E";
     return "F";
   }
+
+  /* ---------- IMPORTANT QUESTIONS: public read, sirf admin write ---------- */
+  onSnapshot(collection(db, QUESTIONS_COL), snap => {
+    questions = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    renderSubjectFilter();
+    renderPractice();
+    renderQuestionAdmin();
+  }, err => console.error(err));
 
   /* ---------- ADMIN: poori list sirf login ke baad load hoti hai ---------- */
   let unsubscribeList = null;
@@ -246,6 +293,15 @@
       </tr>`;
     }).join("");
 
+    const mt = student.mockTest;
+    const mockHtml = mt ? `
+        <h2 style="margin-top:8px">Mock Test</h2>
+        <div class="info-grid">
+          <div class="info-item"><div class="label">Paper</div><div class="value">${esc(mt.name)}</div></div>
+          <div class="info-item"><div class="label">Marks</div><div class="value">${esc(mt.marks)} / ${esc(mt.max)}</div></div>
+          <div class="info-item"><div class="label">Percentage</div><div class="value">${((mt.marks / mt.max) * 100).toFixed(2)}%</div></div>
+        </div>` : "";
+
     $("resultArea").innerHTML = `
       <div class="card">
         <div class="info-grid">
@@ -259,6 +315,7 @@
           <thead><tr><th>Subject</th><th class="num">Marks</th><th class="num">Grade</th><th class="num">Status</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
+        ${mockHtml}
         <div class="summary">
           <div>
             <div class="label">Total</div>
@@ -316,11 +373,22 @@
     $("fCourse").value = "";
     $("fSem").value = "";
     $("fBranch").value = "";
+    $("mName").value = "";
+    $("mMax").value = 100;
+    $("mMarks").value = "";
     $("subjectRows").innerHTML = "";
     addSubjectRow();
     $("formTitle").textContent = "Naya student add karein";
     $("cancelEditBtn").classList.add("hidden");
     $("formError").textContent = "";
+  }
+
+  function readMock() {
+    const name = $("mName").value.trim();
+    const max = Number($("mMax").value) || 100;
+    const marksRaw = $("mMarks").value.trim();
+    if (!name && marksRaw === "") return null;
+    return { name: name || "Mock Test", max, marks: marksRaw === "" ? null : Number(marksRaw) };
   }
 
   function buildRecord() {
@@ -346,6 +414,11 @@
     }
     if (subjects.length === 0) return { error: "Kam se kam ek subject add karein." };
 
+    const mock = readMock();
+    if (mock && (mock.marks === null || isNaN(mock.marks) || mock.marks < 0 || mock.marks > mock.max)) {
+      return { error: `Mock test ke marks 0 se ${mock.max} ke beech hone chahiye.` };
+    }
+
     return {
       record: {
         roll,
@@ -353,6 +426,7 @@
         branch,
         course: $("fCourse").value.trim(),
         semester: $("fSem").value.trim(),
+        mockTest: mock,
         subjects
       }
     };
@@ -395,6 +469,10 @@
     $("fCourse").value = s.course || "";
     $("fSem").value = s.semester || "";
     $("fBranch").value = s.branch || "";
+    const mt = s.mockTest || {};
+    $("mName").value = mt.name || "";
+    $("mMax").value = mt.max || 100;
+    $("mMarks").value = mt.marks ?? "";
     $("subjectRows").innerHTML = "";
     (s.subjects || []).forEach(sub => addSubjectRow(sub.name, sub.marks, getTypeKey(sub)));
     $("formTitle").textContent = `Edit: ${s.name} (Roll ${s.roll})`;
@@ -476,13 +554,84 @@
     }
   }
 
+  /* ---------- IMPORTANT QUESTIONS: list, practice, admin ---------- */
+  function renderSubjectFilter() {
+    const sel = $("practiceSubject");
+    const cur = sel.value;
+    const subjects = [...new Set(questions.map(q => q.subject))].sort();
+    sel.innerHTML = `<option value="">Sab subjects</option>` +
+      subjects.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+    sel.value = subjects.includes(cur) ? cur : "";
+  }
+
+  function renderPractice() {
+    const sub = $("practiceSubject").value;
+    const list = questions.filter(q => !sub || q.subject === sub);
+    $("practiceList").innerHTML = list.length === 0
+      ? `<p class="note">Abhi koi question nahi hai.</p>`
+      : list.map((q, i) => `
+        <div class="student-item">
+          <div>
+            <div class="meta">${esc(q.subject)}</div>
+            <div>${i + 1}. ${esc(q.text)}</div>
+          </div>
+        </div>`).join("");
+  }
+
+  function renderQuestionAdmin() {
+    $("qCount").textContent = questions.length;
+    $("qAdminList").innerHTML = questions.length === 0
+      ? `<p class="note">Koi question nahi hai.</p>`
+      : questions.map(q => `
+        <div class="student-item">
+          <div>
+            <div class="meta">${esc(q.subject)}</div>
+            <div>${esc(q.text)}</div>
+          </div>
+          <div class="actions">
+            <button class="danger small q-del" data-id="${esc(q.id)}">Delete</button>
+          </div>
+        </div>`).join("");
+  }
+
+  async function addQuestion() {
+    $("qError").textContent = "";
+    const subject = $("qSubject").value.trim();
+    const text = $("qText").value.trim();
+    if (!subject || !text) {
+      $("qError").textContent = "Subject aur question dono likhein.";
+      return;
+    }
+    try {
+      await addDoc(collection(db, QUESTIONS_COL), { subject, text, createdAt: Date.now() });
+      $("qText").value = "";
+    } catch (e) {
+      console.error(e);
+      $("qError").textContent = "Question save nahi ho paaya. Login check karein.";
+    }
+  }
+
+  async function deleteQuestion(id) {
+    if (!confirm("Ye question delete karna hai?")) return;
+    try {
+      await deleteDoc(doc(db, QUESTIONS_COL, id));
+    } catch (e) {
+      console.error(e);
+      alert("Delete nahi ho paaya. Login check karein.");
+    }
+  }
+
   /* ---------- VIEW & AUTH ---------- */
-  function showAdminView(show) {
-    adminViewOpen = show;
-    $("publicView").classList.toggle("hidden", show);
-    $("adminView").classList.toggle("hidden", !show);
-    $("toggleViewBtn").textContent = show ? "Result page" : "Admin Panel";
-    if (show) refreshAdminUI();
+  let currentPage = "result";
+  function showPage(page) {
+    currentPage = page;
+    adminViewOpen = page === "admin";
+    $("publicView").classList.toggle("hidden", page !== "result");
+    $("practiceView").classList.toggle("hidden", page !== "practice");
+    $("adminView").classList.toggle("hidden", page !== "admin");
+    $("toggleViewBtn").textContent = page === "admin" ? "Result page" : "Admin Panel";
+    $("practiceBtn").textContent = page === "practice" ? "Result page" : "Important Questions";
+    if (page === "admin") refreshAdminUI();
   }
 
   function refreshAdminUI() {
@@ -521,7 +670,13 @@
   $("searchBtn").addEventListener("click", search);
   $("query").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
 
-  $("toggleViewBtn").addEventListener("click", () => showAdminView(!adminViewOpen));
+  $("toggleViewBtn").addEventListener("click", () => showPage(currentPage === "admin" ? "result" : "admin"));
+  $("practiceBtn").addEventListener("click", () => showPage(currentPage === "practice" ? "result" : "practice"));
+  $("practiceSubject").addEventListener("change", renderPractice);
+  $("addQuestionBtn").addEventListener("click", addQuestion);
+  $("qAdminList").addEventListener("click", e => {
+    if (e.target.classList.contains("q-del")) deleteQuestion(e.target.dataset.id);
+  });
 
   $("loginBtn").addEventListener("click", login);
   $("adminPass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
