@@ -70,6 +70,14 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   }
   .admin-avatar:hover { background: #0f172a; }
+  .group-tab { background: #e2e8f0; color: #1e293b; }
+  .group-tab:hover { background: #cbd5e1; }
+  .group-tab.active { background: #2563eb; color: #fff; }
+  .pdf-link {
+    display: inline-block; padding: 6px 10px; border-radius: 8px; background: #2563eb;
+    color: #fff; text-decoration: none; font-size: 0.85rem;
+  }
+  .pdf-link:hover { background: #1d4ed8; }
   .file-btn { padding: 6px 10px; border-radius: 8px; background: #e2e8f0; color: #1e293b; cursor: pointer; font-size: 0.85rem; }
 </style>
 </head>
@@ -100,8 +108,16 @@
   <section id="practiceView" class="hidden">
     <div class="card">
       <h2>Important Questions (Practice)</h2>
+      <div id="groupTabs" class="row" style="margin-bottom:12px">
+        <button class="group-tab active" data-group="">Sab</button>
+        <button class="group-tab" data-group="1st Year">1st Year</button>
+        <button class="group-tab" data-group="CSE 2nd Sem">CSE 2nd Sem</button>
+        <button class="group-tab" data-group="Mechanical 2nd Sem">Mechanical 2nd Sem</button>
+      </div>
       <select id="practiceSubject" style="width:100%; margin-bottom:12px"><option value="">Sab subjects</option></select>
       <div id="practiceList"></div>
+      <h2 style="margin-top:20px">PDF Notes</h2>
+      <div id="pdfList"></div>
     </div>
     <p class="note">Ye practice ke liye hain. Exam mein kya aayega, ye pakka nahi hai.</p>
   </section>
@@ -122,8 +138,40 @@
 
     <div id="adminPanel" class="hidden">
       <div class="card">
+        <h2>PDF Important Questions upload karein</h2>
+        <div class="grid-form">
+          <label>Group *
+            <select id="pGroup">
+              <option value="">-- Group chunein --</option>
+              <option value="1st Year">1st Year</option>
+              <option value="CSE 2nd Sem">CSE 2nd Sem</option>
+              <option value="Mechanical 2nd Sem">Mechanical 2nd Sem</option>
+            </select>
+          </label>
+          <label>Subject<input id="pSubject" type="text" placeholder="jaise DBMS"></label>
+          <label>Title *<input id="pTitle" type="text" placeholder="jaise DBMS Unit 1 Important"></label>
+        </div>
+        <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">PDF file * (max 700 KB)
+          <input id="pFile" type="file" accept="application/pdf">
+        </label>
+        <div class="row" style="margin-top:10px"><button id="uploadPdfBtn">PDF upload karein</button></div>
+        <div id="pdfError" class="error"></div>
+        <div id="pdfOk" class="ok"></div>
+        <h2 style="margin-top:16px">Saari PDFs (<span id="pCount">0</span>)</h2>
+        <div id="pdfAdminList"></div>
+      </div>
+
+      <div class="card">
         <h2>Important Questions add karein</h2>
         <div class="grid-form">
+          <label>Group *
+            <select id="qGroup">
+              <option value="">-- Group chunein --</option>
+              <option value="1st Year">1st Year</option>
+              <option value="CSE 2nd Sem">CSE 2nd Sem</option>
+              <option value="Mechanical 2nd Sem">Mechanical 2nd Sem</option>
+            </select>
+          </label>
           <label>Subject *<input id="qSubject" type="text" placeholder="jaise DBMS"></label>
         </div>
         <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">Question *
@@ -226,7 +274,9 @@
   const db = getFirestore(app);
   const STUDENTS_COL = "students";
   const QUESTIONS_COL = "questions";
+  const PDFS_COL = "pdfs";
   let questions = [];
+  let pdfs = [];
 
   let students = [];
   let editingRoll = null;
@@ -254,6 +304,15 @@
     if (pct >= 40) return "E";
     return "F";
   }
+
+  /* ---------- PDF NOTES: public read, sirf admin write ---------- */
+  onSnapshot(collection(db, PDFS_COL), snap => {
+    pdfs = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    renderPdfPublic();
+    renderPdfAdmin();
+  }, err => console.error(err));
 
   /* ---------- IMPORTANT QUESTIONS: public read, sirf admin write ---------- */
   onSnapshot(collection(db, QUESTIONS_COL), snap => {
@@ -564,6 +623,16 @@
   }
 
   /* ---------- IMPORTANT QUESTIONS: list, practice, admin ---------- */
+  let currentGroup = "";
+  function setGroup(group) {
+    currentGroup = group;
+    document.querySelectorAll(".group-tab").forEach(b =>
+      b.classList.toggle("active", b.dataset.group === group)
+    );
+    renderPractice();
+    renderPdfPublic();
+  }
+
   function renderSubjectFilter() {
     const sel = $("practiceSubject");
     const cur = sel.value;
@@ -574,8 +643,11 @@
   }
 
   function renderPractice() {
+    const grp = currentGroup;
     const sub = $("practiceSubject").value;
-    const list = questions.filter(q => !sub || q.subject === sub);
+    const list = questions.filter(q =>
+      (!grp || q.group === grp) && (!sub || q.subject === sub)
+    );
     $("practiceList").innerHTML = list.length === 0
       ? `<p class="note">Abhi koi question nahi hai.</p>`
       : list.map((q, i) => `
@@ -595,6 +667,7 @@
         <div class="student-item">
           <div>
             <div class="meta">${esc(q.subject)}</div>
+            <div class="meta">${esc(q.group || "Group nahi")}</div>
             <div>${esc(q.text)}</div>
           </div>
           <div class="actions">
@@ -607,12 +680,13 @@
     $("qError").textContent = "";
     const subject = $("qSubject").value.trim();
     const text = $("qText").value.trim();
-    if (!subject || !text) {
-      $("qError").textContent = "Subject aur question dono likhein.";
+    const group = $("qGroup").value;
+    if (!group || !subject || !text) {
+      $("qError").textContent = "Group, subject aur question teeno likhein.";
       return;
     }
     try {
-      await addDoc(collection(db, QUESTIONS_COL), { subject, text, createdAt: Date.now() });
+      await addDoc(collection(db, QUESTIONS_COL), { group, subject, text, createdAt: Date.now() });
       $("qText").value = "";
     } catch (e) {
       console.error(e);
@@ -624,6 +698,92 @@
     if (!confirm("Ye question delete karna hai?")) return;
     try {
       await deleteDoc(doc(db, QUESTIONS_COL, id));
+    } catch (e) {
+      console.error(e);
+      alert("Delete nahi ho paaya. Login check karein.");
+    }
+  }
+
+  /* ---------- PDF NOTES: list, upload, delete ---------- */
+  function renderPdfPublic() {
+    const list = pdfs.filter(p => !currentGroup || p.group === currentGroup);
+    $("pdfList").innerHTML = list.length === 0
+      ? `<p class="note">Is group ki koi PDF nahi hai.</p>`
+      : list.map(p => `
+        <div class="student-item">
+          <div>
+            <div class="meta">${esc(p.group)}${p.subject ? " | " + esc(p.subject) : ""}</div>
+            <div><strong>${esc(p.title)}</strong></div>
+          </div>
+          <div class="actions">
+            <a class="pdf-link" href="${p.dataUrl}" download="${esc(p.fileName || "notes.pdf")}">Download</a>
+          </div>
+        </div>`).join("");
+  }
+
+  function renderPdfAdmin() {
+    $("pCount").textContent = pdfs.length;
+    $("pdfAdminList").innerHTML = pdfs.length === 0
+      ? `<p class="note">Koi PDF nahi hai.</p>`
+      : pdfs.map(p => `
+        <div class="student-item">
+          <div>
+            <div class="meta">${esc(p.group)}${p.subject ? " | " + esc(p.subject) : ""}</div>
+            <div>${esc(p.title)}</div>
+          </div>
+          <div class="actions">
+            <button class="danger small p-del" data-id="${esc(p.id)}">Delete</button>
+          </div>
+        </div>`).join("");
+  }
+
+  async function uploadPdf() {
+    $("pdfError").textContent = "";
+    $("pdfOk").textContent = "";
+    const group = $("pGroup").value;
+    const subject = $("pSubject").value.trim();
+    const title = $("pTitle").value.trim();
+    const file = $("pFile").files[0];
+    if (!group || !title || !file) {
+      $("pdfError").textContent = "Group, title aur PDF file teeno zaroori hain.";
+      return;
+    }
+    if (file.type !== "application/pdf") {
+      $("pdfError").textContent = "Sirf PDF file chunein.";
+      return;
+    }
+    if (file.size > 700 * 1024) {
+      $("pdfError").textContent = "PDF 700 KB se chhoti honi chahiye.";
+      return;
+    }
+    const btn = $("uploadPdfBtn");
+    btn.disabled = true;
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      await addDoc(collection(db, PDFS_COL), {
+        group, subject, title, fileName: file.name, dataUrl, createdAt: Date.now()
+      });
+      $("pTitle").value = "";
+      $("pSubject").value = "";
+      $("pFile").value = "";
+      $("pdfOk").textContent = "PDF upload ho gaya.";
+    } catch (e) {
+      console.error(e);
+      $("pdfError").textContent = "Upload nahi ho paaya. Login aur file size check karein.";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function deletePdf(id) {
+    if (!confirm("Ye PDF delete karni hai?")) return;
+    try {
+      await deleteDoc(doc(db, PDFS_COL, id));
     } catch (e) {
       console.error(e);
       alert("Delete nahi ho paaya. Login check karein.");
@@ -682,6 +842,10 @@
   $("toggleViewBtn").addEventListener("click", () => showPage(currentPage === "admin" ? "result" : "admin"));
   $("practiceBtn").addEventListener("click", () => showPage(currentPage === "practice" ? "result" : "practice"));
   $("practiceSubject").addEventListener("change", renderPractice);
+  $("groupTabs").addEventListener("click", e => {
+    const btn = e.target.closest(".group-tab");
+    if (btn) setGroup(btn.dataset.group);
+  });
   $("addQuestionBtn").addEventListener("click", addQuestion);
   $("qAdminList").addEventListener("click", e => {
     if (e.target.classList.contains("q-del")) deleteQuestion(e.target.dataset.id);
@@ -707,6 +871,11 @@
     if (e.target.classList.contains("del-btn")) deleteStudent(roll);
   });
   $("listSearch").addEventListener("input", renderList);
+
+  $("uploadPdfBtn").addEventListener("click", uploadPdf);
+  $("pdfAdminList").addEventListener("click", e => {
+    if (e.target.classList.contains("p-del")) deletePdf(e.target.dataset.id);
+  });
 
   $("exportBtn").addEventListener("click", exportData);
   $("importFile").addEventListener("change", e => {
