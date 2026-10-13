@@ -75,7 +75,7 @@
   <section id="publicView">
     <div class="card">
       <div class="row">
-        <input id="query" type="text" placeholder="Roll number ya naam likhein" autocomplete="off" style="flex:1">
+        <input id="query" type="text" placeholder="Roll number likhein" autocomplete="off" style="flex:1">
         <button id="searchBtn">Result dekhein</button>
       </div>
       <div id="searchError" class="error"></div>
@@ -155,7 +155,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch }
+  import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot, writeBatch }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ====== FIREBASE CONFIG ======
@@ -209,26 +209,23 @@
     return "F";
   }
 
-  /* ---------- LIVE DATA FROM FIRESTORE ---------- */
-  onSnapshot(collection(db, STUDENTS_COL), snap => {
-    students = snap.docs
-      .map(d => ({ ...d.data(), roll: d.id }))
-      .sort((a, b) => String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true }));
-    renderList();
-    if ($("query").value.trim()) search();
-  }, err => {
-    $("searchError").textContent = "Data load nahi ho paaya. Internet ya Firebase rules check karein.";
-    console.error(err);
-  });
+  /* ---------- ADMIN: poori list sirf login ke baad load hoti hai ---------- */
+  let unsubscribeList = null;
+  function startAdminSync() {
+    if (unsubscribeList) return;
+    unsubscribeList = onSnapshot(collection(db, STUDENTS_COL), snap => {
+      students = snap.docs
+        .map(d => ({ ...d.data(), roll: d.id }))
+        .sort((a, b) => String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true }));
+      renderList();
+    }, err => console.error(err));
+  }
+  function stopAdminSync() {
+    if (unsubscribeList) { unsubscribeList(); unsubscribeList = null; }
+    students = [];
+  }
 
   /* ---------- PUBLIC: search & result ---------- */
-  function findStudent(q) {
-    const term = q.trim().toLowerCase();
-    if (!term) return null;
-    return students.find(s => String(s.roll).toLowerCase() === term)
-        || students.find(s => (s.name || "").toLowerCase() === term)
-        || students.find(s => (s.name || "").toLowerCase().includes(term));
-  }
 
   function renderResult(student) {
     const subs = (student.subjects || []).map(s => ({ ...s, t: typeOf(s) }));
@@ -275,21 +272,25 @@
       </div>`;
   }
 
-  function search() {
-    const q = $("query").value;
-    if (!q.trim()) {
-      $("searchError").textContent = "Pehle roll number ya naam likhein.";
-      $("resultArea").innerHTML = "";
-      return;
-    }
-    const s = findStudent(q);
-    if (!s) {
-      $("searchError").textContent = "Is roll number ya naam ka koi record nahi mila.";
-      $("resultArea").innerHTML = "";
+  async function search() {
+    const roll = $("query").value.trim();
+    $("resultArea").innerHTML = "";
+    if (!roll) {
+      $("searchError").textContent = "Pehle roll number likhein.";
       return;
     }
     $("searchError").textContent = "";
-    renderResult(s);
+    try {
+      const snap = await getDoc(doc(db, STUDENTS_COL, roll));
+      if (!snap.exists()) {
+        $("searchError").textContent = "Is roll number ka koi record nahi mila.";
+        return;
+      }
+      renderResult({ ...snap.data(), roll: snap.id });
+    } catch (e) {
+      console.error(e);
+      $("searchError").textContent = "Result load nahi ho paaya. Internet check karein.";
+    }
   }
 
   /* ---------- ADMIN: subject rows ---------- */
@@ -494,7 +495,9 @@
     }
   }
 
-  onAuthStateChanged(auth, () => {
+  onAuthStateChanged(auth, user => {
+    if (user) startAdminSync();
+    else stopAdminSync();
     if (adminViewOpen) refreshAdminUI();
   });
 
