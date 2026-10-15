@@ -15,14 +15,14 @@
     padding: 24px 16px;
   }
   .container { max-width: 760px; margin: 0 auto; }
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; padding-right: 56px; }
   h1 { font-size: 1.5rem; margin: 0; }
   h2 { font-size: 1.1rem; margin: 0 0 12px; }
   .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 16px; }
   input, select {
     padding: 10px 12px; font-size: 0.95rem; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; min-width: 0;
   }
-  input:focus { border-color: #2563eb; }
+  input:focus, select:focus { border-color: #2563eb; }
   button {
     padding: 10px 16px; font-size: 0.95rem; border: none; border-radius: 8px;
     background: #2563eb; color: #fff; cursor: pointer;
@@ -61,7 +61,7 @@
   .student-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; gap: 8px; flex-wrap: wrap; }
   .student-item .meta { font-size: 0.85rem; color: #64748b; }
   .actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  header { padding-right: 56px; }
+  .file-btn { padding: 6px 10px; border-radius: 8px; background: #e2e8f0; color: #1e293b; cursor: pointer; font-size: 0.85rem; }
   .admin-avatar {
     position: fixed; top: 12px; right: 12px; z-index: 10;
     width: 40px; height: 40px; min-width: 40px; padding: 0; border-radius: 50%;
@@ -73,12 +73,16 @@
   .group-tab { background: #e2e8f0; color: #1e293b; }
   .group-tab:hover { background: #cbd5e1; }
   .group-tab.active { background: #2563eb; color: #fff; }
+  .group-head { font-size: 0.95rem; color: #2563eb; margin: 16px 0 6px; }
   .pdf-link {
     display: inline-block; padding: 6px 10px; border-radius: 8px; background: #2563eb;
     color: #fff; text-decoration: none; font-size: 0.85rem;
   }
   .pdf-link:hover { background: #1d4ed8; }
-  .file-btn { padding: 6px 10px; border-radius: 8px; background: #e2e8f0; color: #1e293b; cursor: pointer; font-size: 0.85rem; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tab-btn { background: #e2e8f0; color: #1e293b; }
+  .tab-btn:hover { background: #cbd5e1; }
+  .tab-btn.active { background: #2563eb; color: #fff; }
 </style>
 </head>
 <body>
@@ -87,11 +91,12 @@
     <h1>Result Checker</h1>
     <div class="actions">
       <button id="practiceBtn" class="secondary">Important Questions</button>
-      <button id="toggleViewBtn" class="admin-avatar" title="Admin Panel" aria-label="Admin Panel">S</button>
     </div>
   </header>
 
-  <!-- ===== PUBLIC VIEW ===== -->
+  <button id="toggleViewBtn" class="admin-avatar" title="Admin Panel" aria-label="Admin Panel">S</button>
+
+  <!-- ===== RESULT PAGE (public) ===== -->
   <section id="publicView">
     <div class="card">
       <div class="row">
@@ -123,7 +128,7 @@
     <p class="note">Ye practice ke liye hain. Exam mein kya aayega, ye pakka nahi hai.</p>
   </section>
 
-  <!-- ===== ADMIN VIEW ===== -->
+  <!-- ===== ADMIN ===== -->
   <section id="adminView" class="hidden">
     <div id="loginCard" class="card">
       <h2>Admin Login</h2>
@@ -131,115 +136,140 @@
         <label>Email<input id="adminEmail" type="email" autocomplete="username"></label>
         <label>Password<input id="adminPass" type="password" autocomplete="current-password"></label>
       </div>
-      <div class="row">
-        <button id="loginBtn">Login</button>
-      </div>
+      <div class="row"><button id="loginBtn">Login</button></div>
       <div id="loginError" class="error"></div>
     </div>
 
     <div id="adminPanel" class="hidden">
-      <div class="card">
-        <h2>PDF Important Questions upload karein</h2>
-        <div class="grid-form">
-          <label>Group *
-            <select id="pGroup">
-              <option value="">-- Group chunein --</option>
-              <option value="1st Year">1st Year</option>
-              <option value="CSE 2nd Sem">CSE 2nd Sem</option>
-              <option value="Mechanical 2nd Sem">Mechanical 2nd Sem</option>
-              <option value="Civil 2nd Year">Civil 2nd Year</option>
-            </select>
-          </label>
-          <label>Subject<input id="pSubject" type="text" placeholder="jaise DBMS"></label>
-          <label>Title *<input id="pTitle" type="text" placeholder="jaise DBMS Unit 1 Important"></label>
-        </div>
-        <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">PDF file * (max 700 KB)
-          <input id="pFile" type="file" accept="application/pdf">
-        </label>
-        <div class="row" style="margin-top:10px"><button id="uploadPdfBtn">PDF upload karein</button></div>
-        <div id="pdfError" class="error"></div>
-        <div id="pdfOk" class="ok"></div>
-        <h2 style="margin-top:16px">Saari PDFs (<span id="pCount">0</span>)</h2>
-        <div id="pdfAdminList"></div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="result">Result</button>
+        <button class="tab-btn" data-tab="mock">Mock Test</button>
+        <button class="tab-btn" data-tab="questions">Important Questions</button>
       </div>
 
-      <div class="card">
-        <h2>Important Questions add karein</h2>
-        <div class="grid-form">
-          <label>Group *
-            <select id="qGroup">
-              <option value="">-- Group chunein --</option>
-              <option value="1st Year">1st Year</option>
-              <option value="CSE 2nd Sem">CSE 2nd Sem</option>
-              <option value="Mechanical 2nd Sem">Mechanical 2nd Sem</option>
-              <option value="Civil 2nd Year">Civil 2nd Year</option>
-            </select>
-          </label>
-          <label>Subject *<input id="qSubject" type="text" placeholder="jaise DBMS"></label>
-        </div>
-        <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">Question *
-          <textarea id="qText" rows="3" style="padding:10px 12px; font-size:0.95rem; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit"></textarea>
-        </label>
-        <div class="row" style="margin-top:10px"><button id="addQuestionBtn">Question add karein</button></div>
-        <div id="qError" class="error"></div>
-        <h2 style="margin-top:16px">Saare questions (<span id="qCount">0</span>)</h2>
-        <div id="qAdminList"></div>
-      </div>
-
-      <div class="card">
-        <h2 id="formTitle">Naya student add karein</h2>
-        <div class="grid-form">
-          <label>Roll Number *<input id="fRoll" type="text"></label>
-          <label>Naam *<input id="fName" type="text"></label>
-          <label>Course<input id="fCourse" type="text"></label>
-          <label>Semester<input id="fSem" type="text"></label>
-          <label>Branch *
-            <select id="fBranch">
-              <option value="">-- Branch chunein --</option>
-              <option value="Mechanical">Mechanical</option>
-              <option value="Civil Engineering">Civil Engineering</option>
-              <option value="CSE">CSE</option>
-            </select>
-          </label>
-        </div>
-
-        <h2 style="margin-top:16px">Mock Test (ek paper)</h2>
-        <div class="grid-form">
-          <label>Paper ka naam<input id="mName" type="text" placeholder="jaise Mock Test 1"></label>
-          <label>Max marks<input id="mMax" type="number" min="1" value="100"></label>
-          <label>Marks mile<input id="mMarks" type="number" min="0"></label>
-        </div>
-        <p class="note" style="text-align:left;margin:0 0 12px">Mock test khali chhodna ho to naam aur marks dono khali rakhein.</p>
-
-        <h2 style="margin-top:16px">Subjects aur marks</h2>
-        <div id="subjectRows"></div>
-        <div class="row" style="margin-top:8px">
-          <button id="addSubjectBtn" class="secondary small">+ Subject add karein</button>
-        </div>
-
-        <div class="row" style="margin-top:16px">
-          <button id="saveStudentBtn">Save karein</button>
-          <button id="cancelEditBtn" class="secondary hidden">Cancel</button>
-        </div>
-        <div id="formError" class="error"></div>
-        <div id="formOk" class="ok"></div>
-      </div>
-
-      <div class="card">
-        <div class="row" style="justify-content:space-between; margin-bottom:8px">
-          <h2 style="margin:0">Saare students (<span id="count">0</span>)</h2>
-          <div class="actions">
-            <button id="exportBtn" class="secondary small">Backup (Export)</button>
-            <label class="file-btn">Restore (Import)
-              <input id="importFile" type="file" accept="application/json" class="hidden">
+      <!-- ----- TAB: RESULT ----- -->
+      <div id="tab-result">
+        <div class="card">
+          <h2 id="formTitle">Naya student add karein</h2>
+          <div class="grid-form">
+            <label>Roll Number *<input id="fRoll" type="text"></label>
+            <label>Naam *<input id="fName" type="text"></label>
+            <label>Course<input id="fCourse" type="text"></label>
+            <label>Semester<input id="fSem" type="text"></label>
+            <label>Branch *
+              <select id="fBranch">
+                <option value="">-- Branch chunein --</option>
+                <option value="Mechanical">Mechanical</option>
+                <option value="Civil Engineering">Civil Engineering</option>
+                <option value="CSE">CSE</option>
+              </select>
             </label>
           </div>
+
+          <h2 style="margin-top:16px">Subjects aur marks</h2>
+          <div id="subjectRows"></div>
+          <div class="row" style="margin-top:8px">
+            <button id="addSubjectBtn" class="secondary small">+ Subject add karein</button>
+          </div>
+
+          <div class="row" style="margin-top:16px">
+            <button id="saveStudentBtn">Save karein</button>
+            <button id="cancelEditBtn" class="secondary hidden">Cancel</button>
+          </div>
+          <div id="formError" class="error"></div>
+          <div id="formOk" class="ok"></div>
         </div>
-        <input id="listSearch" type="text" placeholder="List mein search karein" style="width:100%; margin-bottom:8px">
-        <div id="studentList"></div>
+
+        <div class="card">
+          <div class="row" style="justify-content:space-between; margin-bottom:8px">
+            <h2 style="margin:0">Saare students (<span id="count">0</span>)</h2>
+            <div class="actions">
+              <button id="exportBtn" class="secondary small">Backup (Export)</button>
+              <label class="file-btn">Restore (Import)
+                <input id="importFile" type="file" accept="application/json" class="hidden">
+              </label>
+            </div>
+          </div>
+          <input id="listSearch" type="text" placeholder="List mein search karein" style="width:100%; margin-bottom:8px">
+          <div id="studentList"></div>
+        </div>
       </div>
 
-      <div class="row">
+      <!-- ----- TAB: MOCK TEST ----- -->
+      <div id="tab-mock" class="hidden">
+        <div class="card">
+          <h2 id="mockTitle">Mock test entry</h2>
+          <div class="grid-form">
+            <label>Student *<select id="mRoll"></select></label>
+            <label>Paper ka naam<input id="mPaper" type="text" value="Mock Test"></label>
+            <label>Max marks<input id="mMax" type="number" min="1" value="100"></label>
+            <label>Marks mile *<input id="mMarks" type="number" min="0"></label>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button id="saveMockBtn">Mock test save karein</button>
+            <button id="cancelMockBtn" class="secondary hidden">Cancel</button>
+          </div>
+          <div id="mockError" class="error"></div>
+          <div id="mockOk" class="ok"></div>
+        </div>
+        <div class="card">
+          <h2>Mock test list (<span id="mCount">0</span>)</h2>
+          <div id="mockList"></div>
+        </div>
+      </div>
+
+      <!-- ----- TAB: IMPORTANT QUESTIONS ----- -->
+      <div id="tab-questions" class="hidden">
+        <div class="card">
+          <h2>Important Questions add karein</h2>
+          <div class="grid-form">
+            <label>Group *
+              <select id="qGroup">
+                <option value="">-- Group chunein --</option>
+                <option value="1st Year">1st Year</option>
+                <option value="CSE 2nd Sem">CSE 2nd Sem</option>
+                <option value="Mechanical 2nd Sem">Mechanical 2nd Sem</option>
+                <option value="Civil 2nd Year">Civil 2nd Year</option>
+              </select>
+            </label>
+            <label>Subject *<input id="qSubject" type="text" placeholder="jaise DBMS"></label>
+          </div>
+          <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">Question *
+            <textarea id="qText" rows="3" style="padding:10px 12px; font-size:0.95rem; border:1px solid #cbd5e1; border-radius:8px; font-family:inherit"></textarea>
+          </label>
+          <div class="row" style="margin-top:10px"><button id="addQuestionBtn">Question add karein</button></div>
+          <div id="qError" class="error"></div>
+          <h2 style="margin-top:16px">Saare questions (<span id="qCount">0</span>)</h2>
+          <div id="qAdminList"></div>
+        </div>
+
+        <div class="card">
+          <h2>PDF upload karein</h2>
+          <div class="grid-form">
+            <label>Group *
+              <select id="pGroup">
+                <option value="">-- Group chunein --</option>
+                <option value="1st Year">1st Year</option>
+                <option value="CSE 2nd Sem">CSE 2nd Sem</option>
+                <option value="Mechanical 2nd Sem">Mechanical 2nd Sem</option>
+                <option value="Civil 2nd Year">Civil 2nd Year</option>
+              </select>
+            </label>
+            <label>Subject<input id="pSubject" type="text" placeholder="jaise DBMS"></label>
+            <label>Title *<input id="pTitle" type="text" placeholder="jaise DBMS Unit 1 Important"></label>
+          </div>
+          <label style="display:flex; flex-direction:column; font-size:0.8rem; color:#64748b; gap:4px">PDF file * (max 700 KB)
+            <input id="pFile" type="file" accept="application/pdf">
+          </label>
+          <div class="row" style="margin-top:10px"><button id="uploadPdfBtn">PDF upload karein</button></div>
+          <div id="pdfError" class="error"></div>
+          <div id="pdfOk" class="ok"></div>
+          <h2 style="margin-top:16px">Saari PDFs (<span id="pCount">0</span>)</h2>
+          <div id="pdfAdminList"></div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
         <button id="logoutBtn" class="secondary">Logout</button>
       </div>
     </div>
@@ -264,40 +294,49 @@
     measurementId: "G-ZBHN1HFF69"
   };
 
-  // ====== SUBJECT SETTINGS ======
+  // ====== SETTINGS ======
   const CONFIG = {
     subjectTypes: {
       theory:    { label: "Theory",    max: 60, pass: 20 },
       practical: { label: "Practical", max: 40, pass: 20 }
     }
   };
+  const GROUPS = ["1st Year", "CSE 2nd Sem", "Mechanical 2nd Sem", "Civil 2nd Year"];
+  const COL = { students: "students", mocks: "mocktests", questions: "questions", pdfs: "pdfs" };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const STUDENTS_COL = "students";
-  const QUESTIONS_COL = "questions";
-  const PDFS_COL = "pdfs";
+
+  // ====== STATE ======
+  let students = [];
+  let mocks = [];
   let questions = [];
   let pdfs = [];
-
-  let students = [];
   let editingRoll = null;
-  let adminViewOpen = false;
+  let editingMockRoll = null;
+  let currentGroup = "";
+  let currentPage = "result";
+  let currentTab = "result";
+  let unsubAdmin = [];
 
   const $ = (id) => document.getElementById(id);
 
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
-
+  function sortByRoll(a, b) {
+    return String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true });
+  }
+  function sortByCreated(a, b) {
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  }
   function typeOf(sub) {
     return CONFIG.subjectTypes[sub.type] || CONFIG.subjectTypes.theory;
   }
   function getTypeKey(sub) {
     return CONFIG.subjectTypes[sub.type] ? sub.type : "theory";
   }
-
   function getGrade(pct) {
     if (pct >= 90) return "A+";
     if (pct >= 80) return "A";
@@ -308,44 +347,83 @@
     return "F";
   }
 
-  /* ---------- PDF NOTES: public read, sirf admin write ---------- */
-  onSnapshot(collection(db, PDFS_COL), snap => {
-    pdfs = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-    renderPdfPublic();
-    renderPdfAdmin();
-  }, err => console.error(err));
+  // Items ko group ke hisaab se alag-alag headings ke neeche dikhata hai
+  function groupRows(items, rowFn) {
+    const out = [];
+    const names = [...new Set([...GROUPS, ...items.map(i => i.group).filter(Boolean)])];
+    names.forEach(g => {
+      const sub = items.filter(i => i.group === g);
+      if (sub.length) out.push(`<h3 class="group-head">${esc(g)}</h3>`, ...sub.map(rowFn));
+    });
+    const none = items.filter(i => !i.group);
+    if (none.length) out.push(`<h3 class="group-head">Group nahi</h3>`, ...none.map(rowFn));
+    return out;
+  }
 
-  /* ---------- IMPORTANT QUESTIONS: public read, sirf admin write ---------- */
-  onSnapshot(collection(db, QUESTIONS_COL), snap => {
-    questions = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  /* ---------- PUBLIC DATA (sabko padhne ki permission) ---------- */
+  onSnapshot(collection(db, COL.questions), snap => {
+    questions = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort(sortByCreated);
     renderSubjectFilter();
     renderPractice();
     renderQuestionAdmin();
   }, err => console.error(err));
 
-  /* ---------- ADMIN: poori list sirf login ke baad load hoti hai ---------- */
-  let unsubscribeList = null;
+  onSnapshot(collection(db, COL.pdfs), snap => {
+    pdfs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort(sortByCreated);
+    renderPdfPublic();
+    renderPdfAdmin();
+  }, err => console.error(err));
+
+  /* ---------- ADMIN DATA (sirf login ke baad) ---------- */
   function startAdminSync() {
-    if (unsubscribeList) return;
-    unsubscribeList = onSnapshot(collection(db, STUDENTS_COL), snap => {
-      students = snap.docs
-        .map(d => ({ ...d.data(), roll: d.id }))
-        .sort((a, b) => String(a.roll).localeCompare(String(b.roll), undefined, { numeric: true }));
+    if (unsubAdmin.length) return;
+    unsubAdmin.push(onSnapshot(collection(db, COL.students), snap => {
+      students = snap.docs.map(d => ({ ...d.data(), roll: d.id })).sort(sortByRoll);
       renderList();
-    }, err => console.error(err));
+      renderMockSelect();
+    }, err => console.error(err)));
+    unsubAdmin.push(onSnapshot(collection(db, COL.mocks), snap => {
+      mocks = snap.docs.map(d => ({ ...d.data(), roll: d.id })).sort(sortByRoll);
+      renderMockList();
+    }, err => console.error(err)));
   }
+
   function stopAdminSync() {
-    if (unsubscribeList) { unsubscribeList(); unsubscribeList = null; }
+    unsubAdmin.forEach(u => u());
+    unsubAdmin = [];
     students = [];
+    mocks = [];
+    renderList();
+    renderMockSelect();
+    renderMockList();
   }
 
-  /* ---------- PUBLIC: search & result ---------- */
+  /* ---------- RESULT PAGE (public) ---------- */
+  async function search() {
+    const roll = $("query").value.trim();
+    $("resultArea").innerHTML = "";
+    if (!roll) {
+      $("searchError").textContent = "Pehle roll number likhein.";
+      return;
+    }
+    $("searchError").textContent = "";
+    try {
+      const [sSnap, mSnap] = await Promise.all([
+        getDoc(doc(db, COL.students, roll)),
+        getDoc(doc(db, COL.mocks, roll))
+      ]);
+      if (!sSnap.exists()) {
+        $("searchError").textContent = "Is roll number ka koi record nahi mila.";
+        return;
+      }
+      renderResult({ ...sSnap.data(), roll: sSnap.id }, mSnap.exists() ? mSnap.data() : null);
+    } catch (e) {
+      console.error(e);
+      $("searchError").textContent = "Result load nahi ho paaya. Internet check karein.";
+    }
+  }
 
-  function renderResult(student) {
+  function renderResult(student, mock) {
     const subs = (student.subjects || []).map(s => ({ ...s, t: typeOf(s) }));
     const total = subs.reduce((sum, s) => sum + Number(s.marks), 0);
     const max = subs.reduce((sum, s) => sum + s.t.max, 0);
@@ -364,13 +442,12 @@
       </tr>`;
     }).join("");
 
-    const mt = student.mockTest;
-    const mockHtml = mt ? `
+    const mockHtml = mock && mock.marks != null ? `
         <h2 style="margin-top:8px">Mock Test</h2>
         <div class="info-grid">
-          <div class="info-item"><div class="label">Paper</div><div class="value">${esc(mt.name)}</div></div>
-          <div class="info-item"><div class="label">Marks</div><div class="value">${esc(mt.marks)} / ${esc(mt.max)}</div></div>
-          <div class="info-item"><div class="label">Percentage</div><div class="value">${((mt.marks / mt.max) * 100).toFixed(2)}%</div></div>
+          <div class="info-item"><div class="label">Paper</div><div class="value">${esc(mock.paper)}</div></div>
+          <div class="info-item"><div class="label">Marks</div><div class="value">${esc(mock.marks)} / ${esc(mock.max)}</div></div>
+          <div class="info-item"><div class="label">Percentage</div><div class="value">${((mock.marks / mock.max) * 100).toFixed(2)}%</div></div>
         </div>` : "";
 
     $("resultArea").innerHTML = `
@@ -400,28 +477,7 @@
       </div>`;
   }
 
-  async function search() {
-    const roll = $("query").value.trim();
-    $("resultArea").innerHTML = "";
-    if (!roll) {
-      $("searchError").textContent = "Pehle roll number likhein.";
-      return;
-    }
-    $("searchError").textContent = "";
-    try {
-      const snap = await getDoc(doc(db, STUDENTS_COL, roll));
-      if (!snap.exists()) {
-        $("searchError").textContent = "Is roll number ka koi record nahi mila.";
-        return;
-      }
-      renderResult({ ...snap.data(), roll: snap.id });
-    } catch (e) {
-      console.error(e);
-      $("searchError").textContent = "Result load nahi ho paaya. Internet check karein.";
-    }
-  }
-
-  /* ---------- ADMIN: subject rows ---------- */
+  /* ---------- ADMIN: RESULT TAB (student + subjects) ---------- */
   function addSubjectRow(name = "", marks = "", type = "theory") {
     const div = document.createElement("div");
     div.className = "subject-row";
@@ -444,22 +500,11 @@
     $("fCourse").value = "";
     $("fSem").value = "";
     $("fBranch").value = "";
-    $("mName").value = "";
-    $("mMax").value = 100;
-    $("mMarks").value = "";
     $("subjectRows").innerHTML = "";
     addSubjectRow();
     $("formTitle").textContent = "Naya student add karein";
     $("cancelEditBtn").classList.add("hidden");
     $("formError").textContent = "";
-  }
-
-  function readMock() {
-    const name = $("mName").value.trim();
-    const max = Number($("mMax").value) || 100;
-    const marksRaw = $("mMarks").value.trim();
-    if (!name && marksRaw === "") return null;
-    return { name: name || "Mock Test", max, marks: marksRaw === "" ? null : Number(marksRaw) };
   }
 
   function buildRecord() {
@@ -485,11 +530,6 @@
     }
     if (subjects.length === 0) return { error: "Kam se kam ek subject add karein." };
 
-    const mock = readMock();
-    if (mock && (mock.marks === null || isNaN(mock.marks) || mock.marks < 0 || mock.marks > mock.max)) {
-      return { error: `Mock test ke marks 0 se ${mock.max} ke beech hone chahiye.` };
-    }
-
     return {
       record: {
         roll,
@@ -497,7 +537,6 @@
         branch,
         course: $("fCourse").value.trim(),
         semester: $("fSem").value.trim(),
-        mockTest: mock,
         subjects
       }
     };
@@ -519,7 +558,7 @@
     const btn = $("saveStudentBtn");
     btn.disabled = true;
     try {
-      await setDoc(doc(db, STUDENTS_COL, record.roll), record);
+      await setDoc(doc(db, COL.students, record.roll), record);
       resetForm();
       $("formOk").textContent = wasEdit ? "Student update ho gaya." : "Student save ho gaya.";
     } catch (e) {
@@ -540,10 +579,6 @@
     $("fCourse").value = s.course || "";
     $("fSem").value = s.semester || "";
     $("fBranch").value = s.branch || "";
-    const mt = s.mockTest || {};
-    $("mName").value = mt.name || "";
-    $("mMax").value = mt.max || 100;
-    $("mMarks").value = mt.marks ?? "";
     $("subjectRows").innerHTML = "";
     (s.subjects || []).forEach(sub => addSubjectRow(sub.name, sub.marks, getTypeKey(sub)));
     $("formTitle").textContent = `Edit: ${s.name} (Roll ${s.roll})`;
@@ -555,9 +590,12 @@
   async function deleteStudent(roll) {
     const s = students.find(x => String(x.roll) === roll);
     if (!s) return;
-    if (!confirm(`${s.name} (Roll ${s.roll}) ka record delete karna hai?`)) return;
+    if (!confirm(`${s.name} (Roll ${s.roll}) ka record delete karna hai? Uska mock test bhi hat jayega.`)) return;
     try {
-      await deleteDoc(doc(db, STUDENTS_COL, roll));
+      await Promise.all([
+        deleteDoc(doc(db, COL.students, roll)),
+        deleteDoc(doc(db, COL.mocks, roll))
+      ]);
       if (editingRoll === roll) resetForm();
     } catch (e) {
       console.error(e);
@@ -586,10 +624,8 @@
         </div>`).join("");
   }
 
-  /* ---------- ADMIN: export / import ---------- */
   function exportData() {
-    const data = students.map(({ roll, ...rest }) => ({ roll, ...rest }));
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(students, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "results-backup.json";
@@ -614,7 +650,7 @@
         const batch = writeBatch(db);
         data.slice(i, i + CHUNK).forEach(s => {
           const roll = String(s.roll);
-          batch.set(doc(db, STUDENTS_COL, roll), { ...s, roll });
+          batch.set(doc(db, COL.students, roll), { ...s, roll });
         });
         await batch.commit();
       }
@@ -625,17 +661,112 @@
     }
   }
 
-  /* ---------- IMPORTANT QUESTIONS: list, practice, admin ---------- */
-  let currentGroup = "";
-  function setGroup(group) {
-    currentGroup = group;
-    document.querySelectorAll(".group-tab").forEach(b =>
-      b.classList.toggle("active", b.dataset.group === group)
-    );
-    renderPractice();
-    renderPdfPublic();
+  /* ---------- ADMIN: MOCK TEST TAB ---------- */
+  function renderMockSelect() {
+    const sel = $("mRoll");
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">-- Student chunein --</option>` +
+      students.map(s => `<option value="${esc(s.roll)}">${esc(s.roll)} - ${esc(s.name)}</option>`).join("");
+    sel.value = students.some(s => String(s.roll) === cur) ? cur : "";
   }
 
+  function resetMockForm() {
+    editingMockRoll = null;
+    $("mRoll").disabled = false;
+    $("mRoll").value = "";
+    $("mPaper").value = "Mock Test";
+    $("mMax").value = 100;
+    $("mMarks").value = "";
+    $("mockTitle").textContent = "Mock test entry";
+    $("cancelMockBtn").classList.add("hidden");
+    $("mockError").textContent = "";
+  }
+
+  async function saveMock() {
+    $("mockError").textContent = "";
+    $("mockOk").textContent = "";
+    const roll = $("mRoll").value;
+    const student = students.find(s => String(s.roll) === roll);
+    const paper = $("mPaper").value.trim() || "Mock Test";
+    const max = Number($("mMax").value);
+    const marksRaw = $("mMarks").value.trim();
+
+    if (!student) { $("mockError").textContent = "Student chunein."; return; }
+    if (!max || max < 1) { $("mockError").textContent = "Max marks sahi daalein."; return; }
+    const marks = Number(marksRaw);
+    if (marksRaw === "" || isNaN(marks) || marks < 0 || marks > max) {
+      $("mockError").textContent = `Marks 0 se ${max} ke beech hone chahiye.`;
+      return;
+    }
+
+    const exists = mocks.some(m => String(m.roll) === roll);
+    if (exists && editingMockRoll === null) {
+      if (!confirm(`Roll ${roll} ka mock test pehle se hai. Update karna hai?`)) return;
+    }
+
+    const wasEdit = editingMockRoll !== null;
+    const btn = $("saveMockBtn");
+    btn.disabled = true;
+    try {
+      await setDoc(doc(db, COL.mocks, roll), {
+        roll, name: student.name, paper, max, marks, createdAt: Date.now()
+      });
+      resetMockForm();
+      $("mockOk").textContent = wasEdit ? "Mock test update ho gaya." : "Mock test save ho gaya.";
+    } catch (e) {
+      console.error(e);
+      $("mockError").textContent = "Save nahi ho paaya. Login check karein.";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function editMock(roll) {
+    const m = mocks.find(x => String(x.roll) === roll);
+    if (!m) return;
+    editingMockRoll = roll;
+    $("mRoll").value = roll;
+    $("mRoll").disabled = true;
+    $("mPaper").value = m.paper || "Mock Test";
+    $("mMax").value = m.max || 100;
+    $("mMarks").value = m.marks ?? "";
+    $("mockTitle").textContent = `Edit: ${m.name} (Roll ${m.roll})`;
+    $("cancelMockBtn").classList.remove("hidden");
+    $("mockOk").textContent = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function deleteMock(roll) {
+    const m = mocks.find(x => String(x.roll) === roll);
+    if (!m) return;
+    if (!confirm(`${m.name} (Roll ${m.roll}) ka mock test delete karna hai?`)) return;
+    try {
+      await deleteDoc(doc(db, COL.mocks, roll));
+      if (editingMockRoll === roll) resetMockForm();
+    } catch (e) {
+      console.error(e);
+      alert("Delete nahi ho paaya. Login check karein.");
+    }
+  }
+
+  function renderMockList() {
+    $("mCount").textContent = mocks.length;
+    $("mockList").innerHTML = mocks.length === 0
+      ? `<p class="note">Abhi koi mock test nahi hai.</p>`
+      : mocks.map(m => `
+        <div class="student-item">
+          <div>
+            <div><strong>${esc(m.name)}</strong> <span class="meta">| Roll ${esc(m.roll)}</span></div>
+            <div class="meta">${esc(m.paper)} | ${esc(m.marks)} / ${esc(m.max)}</div>
+          </div>
+          <div class="actions">
+            <button class="secondary small m-edit" data-roll="${esc(m.roll)}">Edit</button>
+            <button class="danger small m-del" data-roll="${esc(m.roll)}">Delete</button>
+          </div>
+        </div>`).join("");
+  }
+
+  /* ---------- IMPORTANT QUESTIONS ---------- */
   function renderSubjectFilter() {
     const sel = $("practiceSubject");
     const cur = sel.value;
@@ -646,18 +777,17 @@
   }
 
   function renderPractice() {
-    const grp = currentGroup;
     const sub = $("practiceSubject").value;
     const list = questions.filter(q =>
-      (!grp || q.group === grp) && (!sub || q.subject === sub)
+      (!currentGroup || q.group === currentGroup) && (!sub || q.subject === sub)
     );
     $("practiceList").innerHTML = list.length === 0
       ? `<p class="note">Abhi koi question nahi hai.</p>`
-      : list.map((q, i) => `
+      : groupRows(list, q => `
         <div class="student-item">
           <div>
             <div class="meta">${esc(q.subject)}</div>
-            <div>${i + 1}. ${esc(q.text)}</div>
+            <div>${esc(q.text)}</div>
           </div>
         </div>`).join("");
   }
@@ -666,11 +796,10 @@
     $("qCount").textContent = questions.length;
     $("qAdminList").innerHTML = questions.length === 0
       ? `<p class="note">Koi question nahi hai.</p>`
-      : questions.map(q => `
+      : groupRows(questions, q => `
         <div class="student-item">
           <div>
             <div class="meta">${esc(q.subject)}</div>
-            <div class="meta">${esc(q.group || "Group nahi")}</div>
             <div>${esc(q.text)}</div>
           </div>
           <div class="actions">
@@ -681,15 +810,15 @@
 
   async function addQuestion() {
     $("qError").textContent = "";
+    const group = $("qGroup").value;
     const subject = $("qSubject").value.trim();
     const text = $("qText").value.trim();
-    const group = $("qGroup").value;
     if (!group || !subject || !text) {
       $("qError").textContent = "Group, subject aur question teeno likhein.";
       return;
     }
     try {
-      await addDoc(collection(db, QUESTIONS_COL), { group, subject, text, createdAt: Date.now() });
+      await addDoc(collection(db, COL.questions), { group, subject, text, createdAt: Date.now() });
       $("qText").value = "";
     } catch (e) {
       console.error(e);
@@ -700,22 +829,22 @@
   async function deleteQuestion(id) {
     if (!confirm("Ye question delete karna hai?")) return;
     try {
-      await deleteDoc(doc(db, QUESTIONS_COL, id));
+      await deleteDoc(doc(db, COL.questions, id));
     } catch (e) {
       console.error(e);
       alert("Delete nahi ho paaya. Login check karein.");
     }
   }
 
-  /* ---------- PDF NOTES: list, upload, delete ---------- */
+  /* ---------- PDF NOTES ---------- */
   function renderPdfPublic() {
     const list = pdfs.filter(p => !currentGroup || p.group === currentGroup);
     $("pdfList").innerHTML = list.length === 0
       ? `<p class="note">Is group ki koi PDF nahi hai.</p>`
-      : list.map(p => `
+      : groupRows(list, p => `
         <div class="student-item">
           <div>
-            <div class="meta">${esc(p.group)}${p.subject ? " | " + esc(p.subject) : ""}</div>
+            <div class="meta">${esc(p.subject || "")}</div>
             <div><strong>${esc(p.title)}</strong></div>
           </div>
           <div class="actions">
@@ -728,10 +857,10 @@
     $("pCount").textContent = pdfs.length;
     $("pdfAdminList").innerHTML = pdfs.length === 0
       ? `<p class="note">Koi PDF nahi hai.</p>`
-      : pdfs.map(p => `
+      : groupRows(pdfs, p => `
         <div class="student-item">
           <div>
-            <div class="meta">${esc(p.group)}${p.subject ? " | " + esc(p.subject) : ""}</div>
+            <div class="meta">${esc(p.subject || "")}</div>
             <div>${esc(p.title)}</div>
           </div>
           <div class="actions">
@@ -768,7 +897,7 @@
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      await addDoc(collection(db, PDFS_COL), {
+      await addDoc(collection(db, COL.pdfs), {
         group, subject, title, fileName: file.name, dataUrl, createdAt: Date.now()
       });
       $("pTitle").value = "";
@@ -786,18 +915,25 @@
   async function deletePdf(id) {
     if (!confirm("Ye PDF delete karni hai?")) return;
     try {
-      await deleteDoc(doc(db, PDFS_COL, id));
+      await deleteDoc(doc(db, COL.pdfs, id));
     } catch (e) {
       console.error(e);
       alert("Delete nahi ho paaya. Login check karein.");
     }
   }
 
-  /* ---------- VIEW & AUTH ---------- */
-  let currentPage = "result";
+  /* ---------- VIEW, TABS & AUTH ---------- */
+  function setGroup(group) {
+    currentGroup = group;
+    document.querySelectorAll(".group-tab").forEach(b =>
+      b.classList.toggle("active", b.dataset.group === group)
+    );
+    renderPractice();
+    renderPdfPublic();
+  }
+
   function showPage(page) {
     currentPage = page;
-    adminViewOpen = page === "admin";
     $("publicView").classList.toggle("hidden", page !== "result");
     $("practiceView").classList.toggle("hidden", page !== "practice");
     $("adminView").classList.toggle("hidden", page !== "admin");
@@ -806,20 +942,27 @@
     if (page === "admin") refreshAdminUI();
   }
 
+  function showTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll(".tab-btn").forEach(b =>
+      b.classList.toggle("active", b.dataset.tab === tab)
+    );
+    $("tab-result").classList.toggle("hidden", tab !== "result");
+    $("tab-mock").classList.toggle("hidden", tab !== "mock");
+    $("tab-questions").classList.toggle("hidden", tab !== "questions");
+  }
+
   function refreshAdminUI() {
     const loggedIn = !!auth.currentUser;
     $("loginCard").classList.toggle("hidden", loggedIn);
     $("adminPanel").classList.toggle("hidden", !loggedIn);
-    if (loggedIn) {
-      if ($("subjectRows").children.length === 0) resetForm();
-      renderList();
-    }
+    if (loggedIn) showTab(currentTab);
   }
 
   onAuthStateChanged(auth, user => {
     if (user) startAdminSync();
     else stopAdminSync();
-    if (adminViewOpen) refreshAdminUI();
+    if (currentPage === "admin") refreshAdminUI();
   });
 
   async function login() {
@@ -844,20 +987,22 @@
 
   $("toggleViewBtn").addEventListener("click", () => showPage(currentPage === "admin" ? "result" : "admin"));
   $("practiceBtn").addEventListener("click", () => showPage(currentPage === "practice" ? "result" : "practice"));
-  $("practiceSubject").addEventListener("change", renderPractice);
+
   $("groupTabs").addEventListener("click", e => {
     const btn = e.target.closest(".group-tab");
     if (btn) setGroup(btn.dataset.group);
   });
-  $("addQuestionBtn").addEventListener("click", addQuestion);
-  $("qAdminList").addEventListener("click", e => {
-    if (e.target.classList.contains("q-del")) deleteQuestion(e.target.dataset.id);
-  });
+  $("practiceSubject").addEventListener("change", renderPractice);
+
+  document.querySelectorAll(".tab-btn").forEach(b =>
+    b.addEventListener("click", () => showTab(b.dataset.tab))
+  );
 
   $("loginBtn").addEventListener("click", login);
   $("adminPass").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
   $("logoutBtn").addEventListener("click", () => signOut(auth));
 
+  // Result tab
   $("addSubjectBtn").addEventListener("click", () => addSubjectRow());
   $("subjectRows").addEventListener("click", e => {
     if (e.target.classList.contains("remove-subject")) {
@@ -866,7 +1011,6 @@
   });
   $("saveStudentBtn").addEventListener("click", saveStudent);
   $("cancelEditBtn").addEventListener("click", resetForm);
-
   $("studentList").addEventListener("click", e => {
     const roll = e.target.dataset.roll;
     if (!roll) return;
@@ -874,17 +1018,38 @@
     if (e.target.classList.contains("del-btn")) deleteStudent(roll);
   });
   $("listSearch").addEventListener("input", renderList);
-
-  $("uploadPdfBtn").addEventListener("click", uploadPdf);
-  $("pdfAdminList").addEventListener("click", e => {
-    if (e.target.classList.contains("p-del")) deletePdf(e.target.dataset.id);
-  });
-
   $("exportBtn").addEventListener("click", exportData);
   $("importFile").addEventListener("change", e => {
     if (e.target.files[0]) importData(e.target.files[0]);
     e.target.value = "";
   });
+
+  // Mock test tab
+  $("saveMockBtn").addEventListener("click", saveMock);
+  $("cancelMockBtn").addEventListener("click", resetMockForm);
+  $("mockList").addEventListener("click", e => {
+    const roll = e.target.dataset.roll;
+    if (!roll) return;
+    if (e.target.classList.contains("m-edit")) editMock(roll);
+    if (e.target.classList.contains("m-del")) deleteMock(roll);
+  });
+
+  // Important questions tab
+  $("addQuestionBtn").addEventListener("click", addQuestion);
+  $("qAdminList").addEventListener("click", e => {
+    if (e.target.classList.contains("q-del")) deleteQuestion(e.target.dataset.id);
+  });
+  $("uploadPdfBtn").addEventListener("click", uploadPdf);
+  $("pdfAdminList").addEventListener("click", e => {
+    if (e.target.classList.contains("p-del")) deletePdf(e.target.dataset.id);
+  });
+
+  /* ---------- INIT ---------- */
+  resetForm();
+  resetMockForm();
+  renderSubjectFilter();
+  renderPractice();
+  renderPdfPublic();
 </script>
 </body>
 </html>
