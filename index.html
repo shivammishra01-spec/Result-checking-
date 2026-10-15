@@ -83,6 +83,11 @@
   .tab-btn { background: #e2e8f0; color: #1e293b; }
   .tab-btn:hover { background: #cbd5e1; }
   .tab-btn.active { background: #2563eb; color: #fff; }
+  .nav-btn {
+    display: inline-block; padding: 10px 16px; border-radius: 8px;
+    background: #e2e8f0; color: #1e293b; text-decoration: none; font-size: 0.95rem;
+  }
+  .nav-btn:hover { background: #cbd5e1; }
 </style>
 </head>
 <body>
@@ -91,6 +96,7 @@
     <h1>Result Checker</h1>
     <div class="actions">
       <button id="practiceBtn" class="secondary">Important Questions</button>
+      <button id="mockBtn" class="secondary">Mock Test</button>
     </div>
   </header>
 
@@ -107,6 +113,182 @@
     </div>
     <div id="resultArea"></div>
     <p class="note">Result sirf dekhne ke liye hai. Official result ke liye college portal check karein.</p>
+  </section>
+
+  <!-- ===== MOCK TEST (student practice portal, isolated in iframe) ===== -->
+  <section id="mockView" class="hidden">
+    <iframe title="Mock Test Practice" style="width:100%;height:85vh;border:0;border-radius:12px;background:#fff" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;hi&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Poly CSE Practice Portal | 3rd Semester&lt;/title&gt;
+&lt;style&gt;
+:root{--bg:#f3f6fb;--card:#fff;--ink:#17233b;--muted:#65728a;--blue:#2457d6;--blue2:#eaf0ff;--green:#147d4a;--red:#c53a42;--line:#dfe6f1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(135deg,#142b63,#2865dc);color:#fff;padding:25px 18px 30px}
+.wrap{max-width:980px;margin:auto}header .tag{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}h1{font-size:clamp(24px,5vw,34px);margin:8px 0}header p{margin:5px 0 0;opacity:.9}
+main{max-width:980px;margin:-14px auto 40px;padding:0 14px}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;margin-bottom:15px;box-shadow:0 5px 18px #152b5010}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.grow{flex:1;min-width:220px}.muted{color:var(--muted);font-size:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.stat{background:#f7f9fd;padding:13px;border-radius:12px}.stat strong{display:block;font-size:21px}.stat span{font-size:12px;color:var(--muted)}
+button,select,input{font:inherit}button{border:0;border-radius:11px;padding:12px 15px;background:var(--blue);color:white;font-weight:650;cursor:pointer}button.secondary{background:var(--blue2);color:var(--blue)}button.ghost{background:#eef1f6;color:var(--ink)}button:disabled{opacity:.4;cursor:not-allowed}
+select,input{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px;width:100%;color:var(--ink)}label{display:block;font-size:13px;font-weight:650;margin:10px 0 6px}
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px;margin-top:14px}.subject{border:1px solid var(--line);border-radius:14px;padding:15px;text-align:left;background:white;color:var(--ink)}.subject.selected{border:2px solid var(--blue);background:#f2f6ff}.subject .emoji{font-size:24px}.subject strong{display:block;margin:7px 0 3px}.subject small{color:var(--muted)}
+.hidden{display:none!important}.progress{height:7px;background:#e7ecf5;border-radius:9px;overflow:hidden;margin:12px 0}.progress div{height:100%;background:var(--blue);width:0%;transition:width .2s}
+.timer{font-size:19px;font-weight:800;color:var(--blue);background:var(--blue2);padding:9px 13px;border-radius:10px}.timer.warn{color:var(--red);background:#fff0f0}.qtop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.question{font-size:19px;font-weight:700;line-height:1.5;margin:20px 0}.options{display:grid;gap:10px}.option{padding:13px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink);text-align:left;font-weight:500}.option.chosen{border:2px solid var(--blue);background:#eff4ff}.actions{display:flex;justify-content:space-between;gap:9px;flex-wrap:wrap;margin-top:18px}.dots{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.dot{padding:7px 10px;border-radius:8px;background:#eef1f6;color:var(--ink);font-size:13px}.dot.done{background:#dff5e8;color:#11643b}.dot.current{outline:2px solid var(--blue)}
+.score{font-size:42px;font-weight:850;color:var(--blue)}.review-item{border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0}.correct{color:var(--green);font-weight:700}.wrong{color:var(--red);font-weight:700}.note{background:#fff8df;border:1px solid #f3e4a9;padding:12px;border-radius:12px;font-size:13px;color:#6a5510}
+footer{text-align:center;padding:15px;color:var(--muted);font-size:12px}
+@media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:span 2}.panel{padding:15px}.question{font-size:17px}}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;header&gt;&lt;div class=&quot;wrap&quot;&gt;&lt;div class=&quot;tag&quot;&gt;Personal Learning • BTEUP&lt;/div&gt;&lt;h1&gt;Poly CSE Practice Portal&lt;/h1&gt;&lt;p&gt;Diploma in Computer Science &amp; Engineering · 3rd Semester&lt;/p&gt;&lt;/div&gt;&lt;/header&gt;
+&lt;main&gt;
+&lt;section id=&quot;home&quot;&gt;
+ &lt;div class=&quot;panel&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;&lt;div class=&quot;grow&quot;&gt;&lt;h2 style=&quot;margin:0 0 5px&quot;&gt;Namaste, Student! 👋&lt;/h2&gt;&lt;div class=&quot;muted&quot;&gt;Apna subject chunein aur practice test shuru karein.&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;secondary&quot; id=&quot;historyBtn&quot;&gt;📊 My Progress&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;testsCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Tests completed&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;bestScore&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Best score&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;lastScore&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Last score&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;panel&quot;&gt;&lt;h2 style=&quot;margin:0&quot;&gt;Subject-wise Tests&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Har test mein 10 MCQs · 10 minutes · 1 mark per question · No negative marking&lt;/p&gt;
+  &lt;div class=&quot;subjects&quot; id=&quot;subjects&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;row&quot; style=&quot;margin-top:17px&quot;&gt;&lt;div class=&quot;grow&quot;&gt;&lt;label for=&quot;duration&quot;&gt;Test duration&lt;/label&gt;&lt;select id=&quot;duration&quot;&gt;&lt;option value=&quot;5&quot;&gt;5 minutes (quick practice)&lt;/option&gt;&lt;option value=&quot;10&quot; selected&gt;10 minutes (standard)&lt;/option&gt;&lt;option value=&quot;15&quot;&gt;15 minutes&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;grow&quot;&gt;&lt;label for=&quot;count&quot;&gt;Question count&lt;/label&gt;&lt;select id=&quot;count&quot;&gt;&lt;option value=&quot;5&quot;&gt;5 questions&lt;/option&gt;&lt;option value=&quot;10&quot; selected&gt;10 questions&lt;/option&gt;&lt;option value=&quot;15&quot;&gt;Up to 15 questions&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;button id=&quot;startBtn&quot; style=&quot;width:100%;margin-top:15px&quot; disabled&gt;Choose a subject first&lt;/button&gt;
+ &lt;/div&gt;
+ &lt;div class=&quot;note&quot;&gt;Syllabus note: Yeh personal-practice demo hai. Questions sample practice MCQs hain, official BTEUP paper ya verified 2026 syllabus ka replacement nahi. Apne college ke subject names/syllabus se match kar lena.&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id=&quot;test&quot; class=&quot;hidden&quot;&gt;
+ &lt;div class=&quot;panel&quot;&gt;
+  &lt;div class=&quot;qtop&quot;&gt;&lt;div&gt;&lt;div class=&quot;muted&quot; id=&quot;testSubject&quot;&gt;Subject&lt;/div&gt;&lt;strong id=&quot;qCounter&quot;&gt;Question 1 of 10&lt;/strong&gt;&lt;/div&gt;&lt;div id=&quot;timer&quot; class=&quot;timer&quot;&gt;10:00&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;progress&quot;&gt;&lt;div id=&quot;progressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;question&quot; id=&quot;questionText&quot;&gt;&lt;/div&gt;&lt;div id=&quot;options&quot; class=&quot;options&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;prevBtn&quot; class=&quot;ghost&quot;&gt;← Previous&lt;/button&gt;&lt;button id=&quot;nextBtn&quot;&gt;Next →&lt;/button&gt;&lt;/div&gt;
+  &lt;div class=&quot;muted&quot; style=&quot;margin-top:14px&quot;&gt;Question palette (green = answered)&lt;/div&gt;&lt;div class=&quot;dots&quot; id=&quot;palette&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;submitBtn&quot; style=&quot;background:#c53a42&quot;&gt;Submit Test&lt;/button&gt;&lt;button id=&quot;homeBtn&quot; class=&quot;ghost&quot;&gt;Exit to Home&lt;/button&gt;&lt;/div&gt;
+ &lt;/div&gt;
+&lt;/section&gt;
+&lt;section id=&quot;result&quot; class=&quot;hidden&quot;&gt;
+ &lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;muted&quot;&gt;TEST RESULT&lt;/div&gt;&lt;h2 id=&quot;resultTitle&quot;&gt;Test complete&lt;/h2&gt;&lt;div class=&quot;score&quot; id=&quot;scoreText&quot;&gt;0/10&lt;/div&gt;&lt;p id=&quot;resultLine&quot;&gt;&lt;/p&gt;&lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;correctCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Correct&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;wrongCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Incorrect&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;unansweredCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Unanswered&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;retryBtn&quot;&gt;Try Again&lt;/button&gt;&lt;button id=&quot;backBtn&quot; class=&quot;secondary&quot;&gt;Back to Dashboard&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+ &lt;div class=&quot;panel&quot;&gt;&lt;h2&gt;Answer Review&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Har question ka correct answer aur explanation dekhein.&lt;/p&gt;&lt;div id=&quot;review&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/section&gt;
+&lt;section id=&quot;history&quot; class=&quot;hidden&quot;&gt;&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;row&quot;&gt;&lt;div class=&quot;grow&quot;&gt;&lt;h2 style=&quot;margin:0&quot;&gt;My Progress&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Is browser/device par locally saved results.&lt;/p&gt;&lt;/div&gt;&lt;button id=&quot;historyBack&quot; class=&quot;secondary&quot;&gt;← Dashboard&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;historyList&quot;&gt;&lt;/div&gt;&lt;button id=&quot;clearHistory&quot; class=&quot;ghost&quot;&gt;Clear saved progress&lt;/button&gt;&lt;/div&gt;&lt;/section&gt;
+&lt;/main&gt;&lt;footer&gt;Personal practice portal · Results saved only in this browser · Not an official BTEUP website&lt;/footer&gt;
+&lt;script&gt;
+const bank = {
+ &quot;Programming in C&quot;: [
+  [&quot;C language mein program execution ka entry point kya hota hai?&quot;,&quot;main()&quot;,&quot;start()&quot;,&quot;run()&quot;,&quot;init()&quot;,&quot;A&quot;,&quot;C program ka execution aam taur par main() function se shuru hota hai.&quot;],
+  [&quot;Integer value store karne ke liye kaunsa data type use hota hai?&quot;,&quot;char&quot;,&quot;int&quot;,&quot;float&quot;,&quot;double&quot;,&quot;B&quot;,&quot;int whole-number values store karta hai.&quot;],
+  [&quot;C mein statement ke end par aam taur par kya lagta hai?&quot;,&quot;Colon (:)&quot;,&quot;Comma (,)&quot;,&quot;Semicolon (;)&quot;,&quot;Full stop (.)&quot;,&quot;C&quot;,&quot;Semicolon statement ko terminate karta hai.&quot;],
+  [&quot;printf() function kis header file mein declare hota hai?&quot;,&quot;stdio.h&quot;,&quot;math.h&quot;,&quot;string.h&quot;,&quot;stdlib.h&quot;,&quot;A&quot;,&quot;printf() ke liye stdio.h include ki jaati hai.&quot;],
+  [&quot;Array ka first index aam taur par kya hota hai?&quot;,&quot;1&quot;,&quot;-1&quot;,&quot;0&quot;,&quot;2&quot;,&quot;C&quot;,&quot;C arrays zero-based indexing use karte hain.&quot;],
+  [&quot;Equality compare karne ke liye kaunsa operator hai?&quot;,&quot;=&quot;,&quot;==&quot;,&quot;!=&quot;,&quot;&lt;=&quot;,&quot;B&quot;,&quot;== equality check karta hai; = assignment ke liye hai.&quot;],
+  [&quot;Loop ko turant terminate karne ke liye kaunsa keyword use hota hai?&quot;,&quot;skip&quot;,&quot;stop&quot;,&quot;break&quot;,&quot;exitloop&quot;,&quot;C&quot;,&quot;break current loop ya switch se bahar nikalta hai.&quot;],
+  [&quot;Character constant ko kis quotes mein likhte hain?&quot;,&quot;Single quotes&quot;,&quot;Double quotes&quot;,&quot;Square brackets&quot;,&quot;Curly braces&quot;,&quot;A&quot;,&quot;Example: &#x27;A&#x27; ek character constant hai.&quot;],
+  [&quot;Function se value wapas bhejne ka keyword kya hai?&quot;,&quot;send&quot;,&quot;return&quot;,&quot;back&quot;,&quot;value&quot;,&quot;B&quot;,&quot;return caller ko value de sakta hai.&quot;],
+  [&quot;Logical AND operator ka symbol kya hai?&quot;,&quot;&amp;&quot;,&quot;||&quot;,&quot;&amp;&amp;&quot;,&quot;!&quot;,&quot;C&quot;,&quot;&amp;&amp; logical AND operator hai.&quot;],
+  [&quot;C mein comments ka single-line style kaunsa hai?&quot;,&quot;##&quot;,&quot;//&quot;,&quot;&lt;!-- --&gt;&quot;,&quot;**&quot;,&quot;B&quot;,&quot;// ke baad wali line ko comment maana jaata hai.&quot;],
+  [&quot;Pointer variable aam taur par kya store karta hai?&quot;,&quot;Character&quot;,&quot;Memory address&quot;,&quot;Only decimal&quot;,&quot;File name&quot;,&quot;B&quot;,&quot;Pointer kisi object/function ka address hold kar sakta hai.&quot;]
+ ],
+ &quot;Data Structure&quot;: [
+  [&quot;Stack kis principle par kaam karta hai?&quot;,&quot;FIFO&quot;,&quot;LIFO&quot;,&quot;Random&quot;,&quot;Priority only&quot;,&quot;B&quot;,&quot;Stack Last In, First Out principle use karta hai.&quot;],
+  [&quot;Queue ka basic principle kya hai?&quot;,&quot;LIFO&quot;,&quot;FILO only&quot;,&quot;FIFO&quot;,&quot;Binary order&quot;,&quot;C&quot;,&quot;Queue First In, First Out principle follow karti hai.&quot;],
+  [&quot;Binary search ke liye data aam taur par kaisa hona chahiye?&quot;,&quot;Sorted&quot;,&quot;Reverse only&quot;,&quot;Random&quot;,&quot;Duplicate-free only&quot;,&quot;A&quot;,&quot;Binary search sorted data par kaam karta hai.&quot;],
+  [&quot;Linked list ke node mein aam taur par kya hota hai?&quot;,&quot;Data aur link&quot;,&quot;Sirf index&quot;,&quot;Sirf loop&quot;,&quot;Sirf file&quot;,&quot;A&quot;,&quot;Node data ke saath agle node ka link/address rakhta hai.&quot;],
+  [&quot;Tree ka topmost node kya kehlata hai?&quot;,&quot;Leaf&quot;,&quot;Root&quot;,&quot;Edge&quot;,&quot;Sibling&quot;,&quot;B&quot;,&quot;Root tree ka topmost node hota hai.&quot;],
+  [&quot;Graph mein vertices ko kya connect karta hai?&quot;,&quot;Stacks&quot;,&quot;Edges&quot;,&quot;Arrays only&quot;,&quot;Keys&quot;,&quot;B&quot;,&quot;Edges vertices ke beech connections dikhate hain.&quot;],
+  [&quot;Stack mein insertion operation kya kehlata hai?&quot;,&quot;Enqueue&quot;,&quot;Push&quot;,&quot;Dequeue&quot;,&quot;Traverse&quot;,&quot;B&quot;,&quot;Push stack mein item add karta hai.&quot;],
+  [&quot;Queue se item remove karne ka operation kya hai?&quot;,&quot;Push&quot;,&quot;Pop&quot;,&quot;Dequeue&quot;,&quot;Insert&quot;,&quot;C&quot;,&quot;Dequeue front se item remove karta hai.&quot;],
+  [&quot;Linear search mein elements kaise check hote hain?&quot;,&quot;Ek-ek karke&quot;,&quot;Middle only&quot;,&quot;Sorted pairs only&quot;,&quot;Hash only&quot;,&quot;A&quot;,&quot;Linear search elements ko sequence mein inspect karta hai.&quot;],
+  [&quot;Array elements aam taur par memory mein kaise hote hain?&quot;,&quot;Contiguous&quot;,&quot;Hamesha scattered&quot;,&quot;Sirf disk par&quot;,&quot;Network par&quot;,&quot;A&quot;,&quot;Array elements contiguous memory locations mein store hote hain.&quot;]
+ ],
+ &quot;Digital Electronics&quot;: [
+  [&quot;Binary number system ka base kya hai?&quot;,&quot;2&quot;,&quot;8&quot;,&quot;10&quot;,&quot;16&quot;,&quot;A&quot;,&quot;Binary system mein 0 aur 1 digits hote hain.&quot;],
+  [&quot;AND gate ka output 1 kab hota hai?&quot;,&quot;Koi ek input 1 ho&quot;,&quot;Sab inputs 1 hon&quot;,&quot;Sab inputs 0 hon&quot;,&quot;Inputs different hon&quot;,&quot;B&quot;,&quot;AND gate tab 1 deta hai jab sab inputs 1 hon.&quot;],
+  [&quot;NOT gate kya karta hai?&quot;,&quot;Addition&quot;,&quot;Input invert&quot;,&quot;Memory store&quot;,&quot;Multiplication only&quot;,&quot;B&quot;,&quot;NOT gate input ka complement deta hai.&quot;],
+  [&quot;Decimal 10 ka binary representation kya hai?&quot;,&quot;1010&quot;,&quot;1001&quot;,&quot;1110&quot;,&quot;1100&quot;,&quot;A&quot;,&quot;Decimal 10 = binary 1010.&quot;],
+  [&quot;OR gate ka output 0 kab hota hai?&quot;,&quot;Any input 1&quot;,&quot;All inputs 0&quot;,&quot;Inputs same&quot;,&quot;Never&quot;,&quot;B&quot;,&quot;OR gate sirf tab 0 deta hai jab sab inputs 0 hon.&quot;],
+  [&quot;Flip-flop kis tarah ka circuit hai?&quot;,&quot;Memory element&quot;,&quot;Amplifier only&quot;,&quot;Decoder only&quot;,&quot;Power supply&quot;,&quot;A&quot;,&quot;Flip-flop ek bit store kar sakta hai.&quot;],
+  [&quot;Hexadecimal number system ka base kya hai?&quot;,&quot;2&quot;,&quot;8&quot;,&quot;10&quot;,&quot;16&quot;,&quot;D&quot;,&quot;Hexadecimal base 16 use karta hai.&quot;],
+  [&quot;XOR gate output 1 kab deta hai (2 inputs)?&quot;,&quot;Inputs same hon&quot;,&quot;Inputs different hon&quot;,&quot;Dono 0 hon&quot;,&quot;Always&quot;,&quot;B&quot;,&quot;XOR output 1 deta hai jab inputs alag hon.&quot;],
+  [&quot;Full adder kitne input bits add karta hai?&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;C&quot;,&quot;Full adder A, B aur carry-in ko add karta hai.&quot;],
+  [&quot;Boolean algebra mein 1 AND 0 ka result?&quot;,&quot;0&quot;,&quot;1&quot;,&quot;10&quot;,&quot;Undefined&quot;,&quot;A&quot;,&quot;AND operation mein 1 · 0 = 0.&quot;]
+ ],
+ &quot;Computer Organization&quot;: [
+  [&quot;CPU ka full form kya hai?&quot;,&quot;Central Processing Unit&quot;,&quot;Computer Primary Utility&quot;,&quot;Central Program User&quot;,&quot;Control Power Unit&quot;,&quot;A&quot;,&quot;CPU ka full form Central Processing Unit hai.&quot;],
+  [&quot;ALU ka main kaam kya hai?&quot;,&quot;Arithmetic aur logical operations&quot;,&quot;Printing&quot;,&quot;Internet routing&quot;,&quot;File scanning only&quot;,&quot;A&quot;,&quot;ALU arithmetic aur logic operations perform karta hai.&quot;],
+  [&quot;RAM kis prakaar ki memory hai?&quot;,&quot;Volatile&quot;,&quot;Permanent non-volatile&quot;,&quot;Optical only&quot;,&quot;Paper memory&quot;,&quot;A&quot;,&quot;Power band hone par RAM ka data aam taur par lost ho jaata hai.&quot;],
+  [&quot;Instruction execution ko control karne wala CPU part?&quot;,&quot;Control Unit&quot;,&quot;Mouse&quot;,&quot;Monitor&quot;,&quot;SSD&quot;,&quot;A&quot;,&quot;Control Unit instruction flow ko coordinate karti hai.&quot;],
+  [&quot;1 byte mein kitne bits hote hain?&quot;,&quot;4&quot;,&quot;8&quot;,&quot;16&quot;,&quot;32&quot;,&quot;B&quot;,&quot;1 byte = 8 bits.&quot;],
+  [&quot;Cache memory ka purpose kya hai?&quot;,&quot;Frequently used data ko fast access&quot;,&quot;Screen brightness&quot;,&quot;Permanent backup only&quot;,&quot;Printing&quot;,&quot;A&quot;,&quot;Cache CPU ko frequently needed data jaldi available karati hai.&quot;],
+  [&quot;ROM ka full form kya hai?&quot;,&quot;Read Only Memory&quot;,&quot;Random Output Machine&quot;,&quot;Run Only Mode&quot;,&quot;Read Open Memory&quot;,&quot;A&quot;,&quot;ROM ka full form Read Only Memory hai.&quot;],
+  [&quot;Computer ka main circuit board kya kehlata hai?&quot;,&quot;Motherboard&quot;,&quot;Keyboard&quot;,&quot;Router&quot;,&quot;Heatsink&quot;,&quot;A&quot;,&quot;Motherboard major components ko connect karta hai.&quot;],
+  [&quot;Binary 1111 ka decimal value kya hai?&quot;,&quot;12&quot;,&quot;13&quot;,&quot;14&quot;,&quot;15&quot;,&quot;D&quot;,&quot;8 + 4 + 2 + 1 = 15.&quot;],
+  [&quot;Input device ka example kaunsa hai?&quot;,&quot;Keyboard&quot;,&quot;Monitor&quot;,&quot;Speaker&quot;,&quot;Projector&quot;,&quot;A&quot;,&quot;Keyboard user se input leta hai.&quot;]
+ ],
+ &quot;English &amp; Communication&quot;: [
+  [&quot;Choose the correct spelling:&quot;,&quot;Enviroment&quot;,&quot;Environment&quot;,&quot;Envirnoment&quot;,&quot;Environmant&quot;,&quot;B&quot;,&quot;Correct spelling is Environment.&quot;],
+  [&quot;Synonym of &#x27;rapid&#x27; is:&quot;,&quot;Slow&quot;,&quot;Fast&quot;,&quot;Weak&quot;,&quot;Late&quot;,&quot;B&quot;,&quot;Rapid ka meaning fast/quick hai.&quot;],
+  [&quot;Choose the correct article: ___ apple&quot;,&quot;A&quot;,&quot;An&quot;,&quot;The only&quot;,&quot;No article always&quot;,&quot;B&quot;,&quot;Vowel sound se pehle an use hota hai.&quot;],
+  [&quot;Past tense of &#x27;write&#x27; is:&quot;,&quot;Writed&quot;,&quot;Written&quot;,&quot;Wrote&quot;,&quot;Writing&quot;,&quot;C&quot;,&quot;Write ka simple past &#x27;wrote&#x27; hai.&quot;],
+  [&quot;A formal email should usually have:&quot;,&quot;Clear subject&quot;,&quot;Only emojis&quot;,&quot;No greeting ever&quot;,&quot;All caps&quot;,&quot;A&quot;,&quot;Clear subject line email ka purpose batati hai.&quot;],
+  [&quot;Antonym of &#x27;increase&#x27; is:&quot;,&quot;Grow&quot;,&quot;Expand&quot;,&quot;Decrease&quot;,&quot;Raise&quot;,&quot;C&quot;,&quot;Decrease, increase ka opposite hai.&quot;],
+  [&quot;Choose the correct sentence:&quot;,&quot;He go to college.&quot;,&quot;He goes to college.&quot;,&quot;He going college.&quot;,&quot;He gone to college.&quot;,&quot;B&quot;,&quot;He/she/it ke saath simple present mein goes hota hai.&quot;],
+  [&quot;Communication includes:&quot;,&quot;Sender and receiver&quot;,&quot;Only a keyboard&quot;,&quot;Only silence&quot;,&quot;Only paper&quot;,&quot;A&quot;,&quot;Basic communication mein sender, message aur receiver hote hain.&quot;],
+  [&quot;Plural of &#x27;child&#x27; is:&quot;,&quot;Childs&quot;,&quot;Childes&quot;,&quot;Children&quot;,&quot;Childrens&quot;,&quot;C&quot;,&quot;Child ka plural children hai.&quot;],
+  [&quot;Which is a polite request?&quot;,&quot;Give it now!&quot;,&quot;Could you please help me?&quot;,&quot;You must do it.&quot;,&quot;Move!&quot;,&quot;B&quot;,&quot;Could you please... ek polite request hai.&quot;]
+ ]
+};
+const subjects = Object.keys(bank);
+let selected = &quot;&quot;, questions = [], answers = [], idx = 0, timerId = null, remaining = 600, submitted = false;
+const $ = id =&gt; document.getElementById(id);
+const sections = [&quot;home&quot;,&quot;test&quot;,&quot;result&quot;,&quot;history&quot;];
+function show(id){sections.forEach(s=&gt;$(s).classList.toggle(&quot;hidden&quot;,s!==id));window.scrollTo(0,0)}
+function getHistory(){try{return JSON.parse(localStorage.getItem(&quot;polyCsePracticeHistory&quot;)||&quot;[]&quot;)}catch(e){return []}}
+function saveHistory(arr){try{localStorage.setItem(&quot;polyCsePracticeHistory&quot;,JSON.stringify(arr))}catch(e){}}
+function renderHome(){
+ const hist=getHistory();$(&quot;testsCount&quot;).textContent=hist.length;
+ $(&quot;bestScore&quot;).textContent=hist.length?Math.max(...hist.map(x=&gt;x.percent))+&quot;%&quot;:&quot;—&quot;;
+ $(&quot;lastScore&quot;).textContent=hist.length?hist[0].percent+&quot;%&quot;:&quot;—&quot;;
+ $(&quot;subjects&quot;).innerHTML=&quot;&quot;;
+ subjects.forEach((s,i)=&gt;{const b=document.createElement(&quot;button&quot;);b.className=&quot;subject&quot;+(selected===s?&quot; selected&quot;:&quot;&quot;);b.innerHTML=`&lt;span class=&quot;emoji&quot;&gt;${[&quot;💻&quot;,&quot;🧱&quot;,&quot;🔌&quot;,&quot;🖥️&quot;,&quot;🗣️&quot;][i]}&lt;/span&gt;&lt;strong&gt;${s}&lt;/strong&gt;&lt;small&gt;${bank[s].length} practice MCQs available&lt;/small&gt;`;b.onclick=()=&gt;{selected=s;renderHome();};$(&quot;subjects&quot;).appendChild(b)});
+ $(&quot;startBtn&quot;).disabled=!selected;$(&quot;startBtn&quot;).textContent=selected?`Start ${selected} Test →`:&quot;Choose a subject first&quot;;
+}
+function shuffle(a){let b=a.slice();for(let i=b.length-1;i&gt;0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function startTest(){
+ if(!selected)return;
+ const count=Math.min(Number($(&quot;count&quot;).value),bank[selected].length);
+ questions=shuffle(bank[selected]).slice(0,count);answers=Array(count).fill(null);idx=0;remaining=Number($(&quot;duration&quot;).value)*60;submitted=false;
+ $(&quot;testSubject&quot;).textContent=selected;$(&quot;submitBtn&quot;).disabled=false;show(&quot;test&quot;);renderQuestion();updateTimer();
+ clearInterval(timerId);timerId=setInterval(()=&gt;{remaining--;updateTimer();if(remaining&lt;=0)finishTest(true)},1000);
+}
+function updateTimer(){let m=Math.floor(remaining/60),s=remaining%60;$(&quot;timer&quot;).textContent=String(m).padStart(2,&quot;0&quot;)+&quot;:&quot;+String(s).padStart(2,&quot;0&quot;);$(&quot;timer&quot;).classList.toggle(&quot;warn&quot;,remaining&lt;=60)}
+function renderQuestion(){
+ const q=questions[idx];$(&quot;qCounter&quot;).textContent=`Question ${idx+1} of ${questions.length}`;$(&quot;progressFill&quot;).style.width=((idx+1)/questions.length*100)+&quot;%&quot;;$(&quot;questionText&quot;).textContent=q[0];$(&quot;options&quot;).innerHTML=&quot;&quot;;
+ q.slice(1,5).forEach((opt,i)=&gt;{const b=document.createElement(&quot;button&quot;);b.className=&quot;option&quot;+(answers[idx]===i?&quot; chosen&quot;:&quot;&quot;);b.textContent=String.fromCharCode(65+i)+&quot;. &quot;+opt;b.onclick=()=&gt;{answers[idx]=i;renderQuestion()};$(&quot;options&quot;).appendChild(b)});
+ $(&quot;prevBtn&quot;).disabled=idx===0;$(&quot;nextBtn&quot;).textContent=idx===questions.length-1?&quot;Last question&quot;:&quot;Next →&quot;;
+ $(&quot;palette&quot;).innerHTML=&quot;&quot;;questions.forEach((_,i)=&gt;{const b=document.createElement(&quot;button&quot;);b.className=&quot;dot&quot;+(answers[i]!==null?&quot; done&quot;:&quot;&quot;)+(idx===i?&quot; current&quot;:&quot;&quot;);b.textContent=i+1;b.onclick=()=&gt;{idx=i;renderQuestion()};$(&quot;palette&quot;).appendChild(b)});
+}
+function finishTest(auto=false){
+ if(submitted)return;submitted=true;clearInterval(timerId);
+ let correct=0;questions.forEach((q,i)=&gt;{if(answers[i]===q[5].charCodeAt(0)-65)correct++});
+ const wrong=answers.filter((a,i)=&gt;a!==null&amp;&amp;a!==questions[i][5].charCodeAt(0)-65).length,unanswered=answers.filter(a=&gt;a===null).length;
+ const percent=Math.round(correct/questions.length*100);
+ $(&quot;resultTitle&quot;).textContent=auto?&quot;Time up — test auto-submitted!&quot;:&quot;Test submitted successfully!&quot;;
+ $(&quot;scoreText&quot;).textContent=`${correct}/${questions.length}`;$(&quot;resultLine&quot;).textContent=`${selected} · Score: ${percent}% · Time used: ${formatTime(Number($(&quot;duration&quot;).value)*60-remaining)}`;
+ $(&quot;correctCount&quot;).textContent=correct;$(&quot;wrongCount&quot;).textContent=wrong;$(&quot;unansweredCount&quot;).textContent=unanswered;
+ const hist=getHistory();hist.unshift({subject:selected,correct,total:questions.length,percent,date:new Date().toLocaleString(),auto});saveHistory(hist.slice(0,30));
+ $(&quot;review&quot;).innerHTML=&quot;&quot;;questions.forEach((q,i)=&gt;{const right=q[5].charCodeAt(0)-65;const box=document.createElement(&quot;div&quot;);box.className=&quot;review-item&quot;;const h=document.createElement(&quot;strong&quot;);h.textContent=`Q${i+1}. ${q[0]}`;box.appendChild(h);const p=document.createElement(&quot;p&quot;);p.className=answers[i]===right?&quot;correct&quot;:&quot;wrong&quot;;p.textContent=&quot;Your answer: &quot;+(answers[i]===null?&quot;Not answered&quot;:String.fromCharCode(65+answers[i])+&quot;. &quot;+q[answers[i]+1]);box.appendChild(p);const ans=document.createElement(&quot;p&quot;);ans.className=&quot;correct&quot;;ans.textContent=`Correct answer: ${q[5]}. ${q[right+1]}`;box.appendChild(ans);const ex=document.createElement(&quot;p&quot;);ex.className=&quot;muted&quot;;ex.textContent=q[6];box.appendChild(ex);$(&quot;review&quot;).appendChild(box)});
+ show(&quot;result&quot;);renderHome();
+}
+function formatTime(s){s=Math.max(0,s);return `${Math.floor(s/60)}m ${s%60}s`}
+function showHistory(){const hist=getHistory();$(&quot;historyList&quot;).innerHTML=&quot;&quot;;if(!hist.length){$(&quot;historyList&quot;).innerHTML=&#x27;&lt;p class=&quot;muted&quot;&gt;Abhi koi test result saved nahi hai. Pehla test complete karein!&lt;/p&gt;&#x27;}else hist.forEach(h=&gt;{const d=document.createElement(&quot;div&quot;);d.className=&quot;review-item&quot;;const t=document.createElement(&quot;strong&quot;);t.textContent=h.subject;d.appendChild(t);const p=document.createElement(&quot;p&quot;);p.textContent=`${h.correct}/${h.total} marks · ${h.percent}% · ${h.date}`;d.appendChild(p);$(&quot;historyList&quot;).appendChild(d)});show(&quot;history&quot;)}
+$(&quot;startBtn&quot;).onclick=startTest;$(&quot;prevBtn&quot;).onclick=()=&gt;{if(idx&gt;0){idx--;renderQuestion()}};$(&quot;nextBtn&quot;).onclick=()=&gt;{if(idx&lt;questions.length-1){idx++;renderQuestion()}};
+$(&quot;submitBtn&quot;).onclick=()=&gt;{if(confirm(&quot;Kya aap test submit karna chahte hain?&quot;))finishTest(false)};
+$(&quot;homeBtn&quot;).onclick=()=&gt;{if(confirm(&quot;Test chhodkar dashboard par jana hai? Aapka current test result save nahi hoga.&quot;)){clearInterval(timerId);show(&quot;home&quot;);renderHome()}};
+$(&quot;retryBtn&quot;).onclick=startTest;$(&quot;backBtn&quot;).onclick=()=&gt;{show(&quot;home&quot;);renderHome()};$(&quot;historyBtn&quot;).onclick=showHistory;$(&quot;historyBack&quot;).onclick=()=&gt;{show(&quot;home&quot;);renderHome()};
+$(&quot;clearHistory&quot;).onclick=()=&gt;{if(confirm(&quot;Saved progress delete kar dein?&quot;)){saveHistory([]);showHistory();renderHome()}};
+renderHome();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
   </section>
 
   <!-- ===== IMPORTANT QUESTIONS (public practice page) ===== -->
@@ -936,6 +1118,8 @@
     currentPage = page;
     $("publicView").classList.toggle("hidden", page !== "result");
     $("practiceView").classList.toggle("hidden", page !== "practice");
+    $("mockView").classList.toggle("hidden", page !== "mock");
+    $("mockBtn").textContent = page === "mock" ? "Result page" : "Mock Test";
     $("adminView").classList.toggle("hidden", page !== "admin");
     $("toggleViewBtn").title = page === "admin" ? "Result page par jaayein" : "Admin Panel";
     $("practiceBtn").textContent = page === "practice" ? "Result page" : "Important Questions";
@@ -987,6 +1171,7 @@
 
   $("toggleViewBtn").addEventListener("click", () => showPage(currentPage === "admin" ? "result" : "admin"));
   $("practiceBtn").addEventListener("click", () => showPage(currentPage === "practice" ? "result" : "practice"));
+  $("mockBtn").addEventListener("click", () => showPage(currentPage === "mock" ? "result" : "mock"));
 
   $("groupTabs").addEventListener("click", e => {
     const btn = e.target.closest(".group-tab");
