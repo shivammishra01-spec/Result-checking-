@@ -83,11 +83,59 @@
   .tab-btn { background: #e2e8f0; color: #1e293b; }
   .tab-btn:hover { background: #cbd5e1; }
   .tab-btn.active { background: #2563eb; color: #fff; }
-  .nav-btn {
-    display: inline-block; padding: 10px 16px; border-radius: 8px;
-    background: #e2e8f0; color: #1e293b; text-decoration: none; font-size: 0.95rem;
-  }
-  .nav-btn:hover { background: #cbd5e1; }
+/* ---------- MOCK TEST SERIES ---------- */
+.tz-wrap { max-width: 760px; margin: 0 auto; }
+.tz-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.tz-title { font-size: 1.25rem; font-weight: 700; }
+button.tz-round { width: 38px; height: 38px; padding: 0; border-radius: 50%; background: #e2e8f0; color: #1e293b; font-size: 1.1rem; }
+button.tz-round:hover { background: #cbd5e1; }
+.tz-hero { background: linear-gradient(135deg, #0f2a5f, #2563eb); color: #fff; border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+.tz-hero h2 { color: #fff; margin: 0 0 6px; font-size: 1.3rem; }
+.tz-hero p { margin: 0; opacity: 0.9; font-size: 0.9rem; }
+.tz-card { background: #fff; border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 14px; }
+.tz-card h3 { margin: 0 0 10px; font-size: 1rem; }
+.tz-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.tz-stat { background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.tz-stat strong { display: block; font-size: 1.4rem; color: #2563eb; }
+.tz-stat span { font-size: 0.8rem; color: #64748b; }
+.tz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+button.tz-folder { background: #f8fafc; color: #1e293b; border: 1px solid #e2e8f0; text-align: left; padding: 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 4px; }
+button.tz-folder:hover { background: #eff6ff; border-color: #bfdbfe; }
+button.tz-folder strong { font-size: 0.95rem; }
+button.tz-folder small { color: #64748b; font-size: 0.8rem; }
+.tz-fico { font-size: 1.4rem; }
+.tz-muted { color: #64748b; font-size: 0.85rem; }
+.tz-err { color: #b91c1c; font-size: 0.85rem; margin-top: 8px; min-height: 1em; }
+.tz-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.tz-row input { flex: 1; min-width: 120px; }
+.tz-full { width: 100%; }
+button.tz-ghost { background: #e2e8f0; color: #1e293b; }
+button.tz-ghost:hover { background: #cbd5e1; }
+button.tz-red { background: #dc2626; }
+button.tz-red:hover { background: #b91c1c; }
+.tz-hrow { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+.tz-score-sm { font-weight: 700; color: #2563eb; white-space: nowrap; }
+.tz-progress { height: 7px; background: #e2e8f0; border-radius: 9px; overflow: hidden; margin: 12px 0; }
+.tz-progress div { height: 100%; background: #2563eb; width: 0; transition: width 0.2s; }
+.tz-timer { font-size: 1.1rem; font-weight: 800; color: #2563eb; background: #eff6ff; padding: 8px 12px; border-radius: 10px; }
+.tz-timer.warn { color: #dc2626; background: #fef2f2; }
+.tz-q { font-size: 1.05rem; font-weight: 600; line-height: 1.5; margin: 14px 0; }
+.tz-opts { display: grid; gap: 8px; }
+button.tz-opt { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; text-align: left; font-weight: 500; }
+button.tz-opt:hover { background: #f8fafc; }
+button.tz-opt.chosen { border: 2px solid #2563eb; background: #eff6ff; }
+.tz-dots { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+button.tz-dot { background: #eef1f6; color: #1e293b; padding: 6px 10px; font-size: 0.85rem; }
+button.tz-dot.done { background: #dcfce7; color: #166534; }
+button.tz-dot.cur { outline: 2px solid #2563eb; }
+.tz-score { font-size: 2rem; font-weight: 800; color: #2563eb; margin: 6px 0; }
+.tz-rev { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin: 10px 0; }
+.tz-rev p { margin: 6px 0; font-size: 0.9rem; }
+.ok-t { color: #15803d; }
+.bad-t { color: #b91c1c; }
+.tz-note { font-size: 0.8rem; color: #64748b; text-align: center; margin: 10px 0; }
+@media (max-width: 520px) { .tz-stat strong { font-size: 1.1rem; } }
+
 </style>
 </head>
 <body>
@@ -115,182 +163,6 @@
     <p class="note">Result sirf dekhne ke liye hai. Official result ke liye college portal check karein.</p>
   </section>
 
-  <!-- ===== MOCK TEST (student practice portal, isolated in iframe) ===== -->
-  <section id="mockView" class="hidden">
-    <iframe title="Mock Test Practice" style="width:100%;height:85vh;border:0;border-radius:12px;background:#fff" srcdoc="&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;hi&quot;&gt;
-&lt;head&gt;
-&lt;meta charset=&quot;UTF-8&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
-&lt;title&gt;Poly CSE Practice Portal | 3rd Semester&lt;/title&gt;
-&lt;style&gt;
-:root{--bg:#f3f6fb;--card:#fff;--ink:#17233b;--muted:#65728a;--blue:#2457d6;--blue2:#eaf0ff;--green:#147d4a;--red:#c53a42;--line:#dfe6f1}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-header{background:linear-gradient(135deg,#142b63,#2865dc);color:#fff;padding:25px 18px 30px}
-.wrap{max-width:980px;margin:auto}header .tag{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;opacity:.85}h1{font-size:clamp(24px,5vw,34px);margin:8px 0}header p{margin:5px 0 0;opacity:.9}
-main{max-width:980px;margin:-14px auto 40px;padding:0 14px}.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:19px;margin-bottom:15px;box-shadow:0 5px 18px #152b5010}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.grow{flex:1;min-width:220px}.muted{color:var(--muted);font-size:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.stat{background:#f7f9fd;padding:13px;border-radius:12px}.stat strong{display:block;font-size:21px}.stat span{font-size:12px;color:var(--muted)}
-button,select,input{font:inherit}button{border:0;border-radius:11px;padding:12px 15px;background:var(--blue);color:white;font-weight:650;cursor:pointer}button.secondary{background:var(--blue2);color:var(--blue)}button.ghost{background:#eef1f6;color:var(--ink)}button:disabled{opacity:.4;cursor:not-allowed}
-select,input{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px;width:100%;color:var(--ink)}label{display:block;font-size:13px;font-weight:650;margin:10px 0 6px}
-.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px;margin-top:14px}.subject{border:1px solid var(--line);border-radius:14px;padding:15px;text-align:left;background:white;color:var(--ink)}.subject.selected{border:2px solid var(--blue);background:#f2f6ff}.subject .emoji{font-size:24px}.subject strong{display:block;margin:7px 0 3px}.subject small{color:var(--muted)}
-.hidden{display:none!important}.progress{height:7px;background:#e7ecf5;border-radius:9px;overflow:hidden;margin:12px 0}.progress div{height:100%;background:var(--blue);width:0%;transition:width .2s}
-.timer{font-size:19px;font-weight:800;color:var(--blue);background:var(--blue2);padding:9px 13px;border-radius:10px}.timer.warn{color:var(--red);background:#fff0f0}.qtop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.question{font-size:19px;font-weight:700;line-height:1.5;margin:20px 0}.options{display:grid;gap:10px}.option{padding:13px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink);text-align:left;font-weight:500}.option.chosen{border:2px solid var(--blue);background:#eff4ff}.actions{display:flex;justify-content:space-between;gap:9px;flex-wrap:wrap;margin-top:18px}.dots{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.dot{padding:7px 10px;border-radius:8px;background:#eef1f6;color:var(--ink);font-size:13px}.dot.done{background:#dff5e8;color:#11643b}.dot.current{outline:2px solid var(--blue)}
-.score{font-size:42px;font-weight:850;color:var(--blue)}.review-item{border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0}.correct{color:var(--green);font-weight:700}.wrong{color:var(--red);font-weight:700}.note{background:#fff8df;border:1px solid #f3e4a9;padding:12px;border-radius:12px;font-size:13px;color:#6a5510}
-footer{text-align:center;padding:15px;color:var(--muted);font-size:12px}
-@media(max-width:520px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:span 2}.panel{padding:15px}.question{font-size:17px}}
-&lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;header&gt;&lt;div class=&quot;wrap&quot;&gt;&lt;div class=&quot;tag&quot;&gt;Personal Learning • BTEUP&lt;/div&gt;&lt;h1&gt;Poly CSE Practice Portal&lt;/h1&gt;&lt;p&gt;Diploma in Computer Science &amp; Engineering · 3rd Semester&lt;/p&gt;&lt;/div&gt;&lt;/header&gt;
-&lt;main&gt;
-&lt;section id=&quot;home&quot;&gt;
- &lt;div class=&quot;panel&quot;&gt;
-  &lt;div class=&quot;row&quot;&gt;&lt;div class=&quot;grow&quot;&gt;&lt;h2 style=&quot;margin:0 0 5px&quot;&gt;Namaste, Student! 👋&lt;/h2&gt;&lt;div class=&quot;muted&quot;&gt;Apna subject chunein aur practice test shuru karein.&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;secondary&quot; id=&quot;historyBtn&quot;&gt;📊 My Progress&lt;/button&gt;&lt;/div&gt;
-  &lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;testsCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Tests completed&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;bestScore&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Best score&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;lastScore&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Last score&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
- &lt;/div&gt;
- &lt;div class=&quot;panel&quot;&gt;&lt;h2 style=&quot;margin:0&quot;&gt;Subject-wise Tests&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Har test mein 10 MCQs · 10 minutes · 1 mark per question · No negative marking&lt;/p&gt;
-  &lt;div class=&quot;subjects&quot; id=&quot;subjects&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;row&quot; style=&quot;margin-top:17px&quot;&gt;&lt;div class=&quot;grow&quot;&gt;&lt;label for=&quot;duration&quot;&gt;Test duration&lt;/label&gt;&lt;select id=&quot;duration&quot;&gt;&lt;option value=&quot;5&quot;&gt;5 minutes (quick practice)&lt;/option&gt;&lt;option value=&quot;10&quot; selected&gt;10 minutes (standard)&lt;/option&gt;&lt;option value=&quot;15&quot;&gt;15 minutes&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;grow&quot;&gt;&lt;label for=&quot;count&quot;&gt;Question count&lt;/label&gt;&lt;select id=&quot;count&quot;&gt;&lt;option value=&quot;5&quot;&gt;5 questions&lt;/option&gt;&lt;option value=&quot;10&quot; selected&gt;10 questions&lt;/option&gt;&lt;option value=&quot;15&quot;&gt;Up to 15 questions&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;button id=&quot;startBtn&quot; style=&quot;width:100%;margin-top:15px&quot; disabled&gt;Choose a subject first&lt;/button&gt;
- &lt;/div&gt;
- &lt;div class=&quot;note&quot;&gt;Syllabus note: Yeh personal-practice demo hai. Questions sample practice MCQs hain, official BTEUP paper ya verified 2026 syllabus ka replacement nahi. Apne college ke subject names/syllabus se match kar lena.&lt;/div&gt;
-&lt;/section&gt;
-&lt;section id=&quot;test&quot; class=&quot;hidden&quot;&gt;
- &lt;div class=&quot;panel&quot;&gt;
-  &lt;div class=&quot;qtop&quot;&gt;&lt;div&gt;&lt;div class=&quot;muted&quot; id=&quot;testSubject&quot;&gt;Subject&lt;/div&gt;&lt;strong id=&quot;qCounter&quot;&gt;Question 1 of 10&lt;/strong&gt;&lt;/div&gt;&lt;div id=&quot;timer&quot; class=&quot;timer&quot;&gt;10:00&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;progress&quot;&gt;&lt;div id=&quot;progressFill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class=&quot;question&quot; id=&quot;questionText&quot;&gt;&lt;/div&gt;&lt;div id=&quot;options&quot; class=&quot;options&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;prevBtn&quot; class=&quot;ghost&quot;&gt;← Previous&lt;/button&gt;&lt;button id=&quot;nextBtn&quot;&gt;Next →&lt;/button&gt;&lt;/div&gt;
-  &lt;div class=&quot;muted&quot; style=&quot;margin-top:14px&quot;&gt;Question palette (green = answered)&lt;/div&gt;&lt;div class=&quot;dots&quot; id=&quot;palette&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;submitBtn&quot; style=&quot;background:#c53a42&quot;&gt;Submit Test&lt;/button&gt;&lt;button id=&quot;homeBtn&quot; class=&quot;ghost&quot;&gt;Exit to Home&lt;/button&gt;&lt;/div&gt;
- &lt;/div&gt;
-&lt;/section&gt;
-&lt;section id=&quot;result&quot; class=&quot;hidden&quot;&gt;
- &lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;muted&quot;&gt;TEST RESULT&lt;/div&gt;&lt;h2 id=&quot;resultTitle&quot;&gt;Test complete&lt;/h2&gt;&lt;div class=&quot;score&quot; id=&quot;scoreText&quot;&gt;0/10&lt;/div&gt;&lt;p id=&quot;resultLine&quot;&gt;&lt;/p&gt;&lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;correctCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Correct&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;wrongCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Incorrect&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong id=&quot;unansweredCount&quot;&gt;0&lt;/strong&gt;&lt;span&gt;Unanswered&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;actions&quot;&gt;&lt;button id=&quot;retryBtn&quot;&gt;Try Again&lt;/button&gt;&lt;button id=&quot;backBtn&quot; class=&quot;secondary&quot;&gt;Back to Dashboard&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
- &lt;div class=&quot;panel&quot;&gt;&lt;h2&gt;Answer Review&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Har question ka correct answer aur explanation dekhein.&lt;/p&gt;&lt;div id=&quot;review&quot;&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;/section&gt;
-&lt;section id=&quot;history&quot; class=&quot;hidden&quot;&gt;&lt;div class=&quot;panel&quot;&gt;&lt;div class=&quot;row&quot;&gt;&lt;div class=&quot;grow&quot;&gt;&lt;h2 style=&quot;margin:0&quot;&gt;My Progress&lt;/h2&gt;&lt;p class=&quot;muted&quot;&gt;Is browser/device par locally saved results.&lt;/p&gt;&lt;/div&gt;&lt;button id=&quot;historyBack&quot; class=&quot;secondary&quot;&gt;← Dashboard&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;historyList&quot;&gt;&lt;/div&gt;&lt;button id=&quot;clearHistory&quot; class=&quot;ghost&quot;&gt;Clear saved progress&lt;/button&gt;&lt;/div&gt;&lt;/section&gt;
-&lt;/main&gt;&lt;footer&gt;Personal practice portal · Results saved only in this browser · Not an official BTEUP website&lt;/footer&gt;
-&lt;script&gt;
-const bank = {
- &quot;Programming in C&quot;: [
-  [&quot;C language mein program execution ka entry point kya hota hai?&quot;,&quot;main()&quot;,&quot;start()&quot;,&quot;run()&quot;,&quot;init()&quot;,&quot;A&quot;,&quot;C program ka execution aam taur par main() function se shuru hota hai.&quot;],
-  [&quot;Integer value store karne ke liye kaunsa data type use hota hai?&quot;,&quot;char&quot;,&quot;int&quot;,&quot;float&quot;,&quot;double&quot;,&quot;B&quot;,&quot;int whole-number values store karta hai.&quot;],
-  [&quot;C mein statement ke end par aam taur par kya lagta hai?&quot;,&quot;Colon (:)&quot;,&quot;Comma (,)&quot;,&quot;Semicolon (;)&quot;,&quot;Full stop (.)&quot;,&quot;C&quot;,&quot;Semicolon statement ko terminate karta hai.&quot;],
-  [&quot;printf() function kis header file mein declare hota hai?&quot;,&quot;stdio.h&quot;,&quot;math.h&quot;,&quot;string.h&quot;,&quot;stdlib.h&quot;,&quot;A&quot;,&quot;printf() ke liye stdio.h include ki jaati hai.&quot;],
-  [&quot;Array ka first index aam taur par kya hota hai?&quot;,&quot;1&quot;,&quot;-1&quot;,&quot;0&quot;,&quot;2&quot;,&quot;C&quot;,&quot;C arrays zero-based indexing use karte hain.&quot;],
-  [&quot;Equality compare karne ke liye kaunsa operator hai?&quot;,&quot;=&quot;,&quot;==&quot;,&quot;!=&quot;,&quot;&lt;=&quot;,&quot;B&quot;,&quot;== equality check karta hai; = assignment ke liye hai.&quot;],
-  [&quot;Loop ko turant terminate karne ke liye kaunsa keyword use hota hai?&quot;,&quot;skip&quot;,&quot;stop&quot;,&quot;break&quot;,&quot;exitloop&quot;,&quot;C&quot;,&quot;break current loop ya switch se bahar nikalta hai.&quot;],
-  [&quot;Character constant ko kis quotes mein likhte hain?&quot;,&quot;Single quotes&quot;,&quot;Double quotes&quot;,&quot;Square brackets&quot;,&quot;Curly braces&quot;,&quot;A&quot;,&quot;Example: &#x27;A&#x27; ek character constant hai.&quot;],
-  [&quot;Function se value wapas bhejne ka keyword kya hai?&quot;,&quot;send&quot;,&quot;return&quot;,&quot;back&quot;,&quot;value&quot;,&quot;B&quot;,&quot;return caller ko value de sakta hai.&quot;],
-  [&quot;Logical AND operator ka symbol kya hai?&quot;,&quot;&amp;&quot;,&quot;||&quot;,&quot;&amp;&amp;&quot;,&quot;!&quot;,&quot;C&quot;,&quot;&amp;&amp; logical AND operator hai.&quot;],
-  [&quot;C mein comments ka single-line style kaunsa hai?&quot;,&quot;##&quot;,&quot;//&quot;,&quot;&lt;!-- --&gt;&quot;,&quot;**&quot;,&quot;B&quot;,&quot;// ke baad wali line ko comment maana jaata hai.&quot;],
-  [&quot;Pointer variable aam taur par kya store karta hai?&quot;,&quot;Character&quot;,&quot;Memory address&quot;,&quot;Only decimal&quot;,&quot;File name&quot;,&quot;B&quot;,&quot;Pointer kisi object/function ka address hold kar sakta hai.&quot;]
- ],
- &quot;Data Structure&quot;: [
-  [&quot;Stack kis principle par kaam karta hai?&quot;,&quot;FIFO&quot;,&quot;LIFO&quot;,&quot;Random&quot;,&quot;Priority only&quot;,&quot;B&quot;,&quot;Stack Last In, First Out principle use karta hai.&quot;],
-  [&quot;Queue ka basic principle kya hai?&quot;,&quot;LIFO&quot;,&quot;FILO only&quot;,&quot;FIFO&quot;,&quot;Binary order&quot;,&quot;C&quot;,&quot;Queue First In, First Out principle follow karti hai.&quot;],
-  [&quot;Binary search ke liye data aam taur par kaisa hona chahiye?&quot;,&quot;Sorted&quot;,&quot;Reverse only&quot;,&quot;Random&quot;,&quot;Duplicate-free only&quot;,&quot;A&quot;,&quot;Binary search sorted data par kaam karta hai.&quot;],
-  [&quot;Linked list ke node mein aam taur par kya hota hai?&quot;,&quot;Data aur link&quot;,&quot;Sirf index&quot;,&quot;Sirf loop&quot;,&quot;Sirf file&quot;,&quot;A&quot;,&quot;Node data ke saath agle node ka link/address rakhta hai.&quot;],
-  [&quot;Tree ka topmost node kya kehlata hai?&quot;,&quot;Leaf&quot;,&quot;Root&quot;,&quot;Edge&quot;,&quot;Sibling&quot;,&quot;B&quot;,&quot;Root tree ka topmost node hota hai.&quot;],
-  [&quot;Graph mein vertices ko kya connect karta hai?&quot;,&quot;Stacks&quot;,&quot;Edges&quot;,&quot;Arrays only&quot;,&quot;Keys&quot;,&quot;B&quot;,&quot;Edges vertices ke beech connections dikhate hain.&quot;],
-  [&quot;Stack mein insertion operation kya kehlata hai?&quot;,&quot;Enqueue&quot;,&quot;Push&quot;,&quot;Dequeue&quot;,&quot;Traverse&quot;,&quot;B&quot;,&quot;Push stack mein item add karta hai.&quot;],
-  [&quot;Queue se item remove karne ka operation kya hai?&quot;,&quot;Push&quot;,&quot;Pop&quot;,&quot;Dequeue&quot;,&quot;Insert&quot;,&quot;C&quot;,&quot;Dequeue front se item remove karta hai.&quot;],
-  [&quot;Linear search mein elements kaise check hote hain?&quot;,&quot;Ek-ek karke&quot;,&quot;Middle only&quot;,&quot;Sorted pairs only&quot;,&quot;Hash only&quot;,&quot;A&quot;,&quot;Linear search elements ko sequence mein inspect karta hai.&quot;],
-  [&quot;Array elements aam taur par memory mein kaise hote hain?&quot;,&quot;Contiguous&quot;,&quot;Hamesha scattered&quot;,&quot;Sirf disk par&quot;,&quot;Network par&quot;,&quot;A&quot;,&quot;Array elements contiguous memory locations mein store hote hain.&quot;]
- ],
- &quot;Digital Electronics&quot;: [
-  [&quot;Binary number system ka base kya hai?&quot;,&quot;2&quot;,&quot;8&quot;,&quot;10&quot;,&quot;16&quot;,&quot;A&quot;,&quot;Binary system mein 0 aur 1 digits hote hain.&quot;],
-  [&quot;AND gate ka output 1 kab hota hai?&quot;,&quot;Koi ek input 1 ho&quot;,&quot;Sab inputs 1 hon&quot;,&quot;Sab inputs 0 hon&quot;,&quot;Inputs different hon&quot;,&quot;B&quot;,&quot;AND gate tab 1 deta hai jab sab inputs 1 hon.&quot;],
-  [&quot;NOT gate kya karta hai?&quot;,&quot;Addition&quot;,&quot;Input invert&quot;,&quot;Memory store&quot;,&quot;Multiplication only&quot;,&quot;B&quot;,&quot;NOT gate input ka complement deta hai.&quot;],
-  [&quot;Decimal 10 ka binary representation kya hai?&quot;,&quot;1010&quot;,&quot;1001&quot;,&quot;1110&quot;,&quot;1100&quot;,&quot;A&quot;,&quot;Decimal 10 = binary 1010.&quot;],
-  [&quot;OR gate ka output 0 kab hota hai?&quot;,&quot;Any input 1&quot;,&quot;All inputs 0&quot;,&quot;Inputs same&quot;,&quot;Never&quot;,&quot;B&quot;,&quot;OR gate sirf tab 0 deta hai jab sab inputs 0 hon.&quot;],
-  [&quot;Flip-flop kis tarah ka circuit hai?&quot;,&quot;Memory element&quot;,&quot;Amplifier only&quot;,&quot;Decoder only&quot;,&quot;Power supply&quot;,&quot;A&quot;,&quot;Flip-flop ek bit store kar sakta hai.&quot;],
-  [&quot;Hexadecimal number system ka base kya hai?&quot;,&quot;2&quot;,&quot;8&quot;,&quot;10&quot;,&quot;16&quot;,&quot;D&quot;,&quot;Hexadecimal base 16 use karta hai.&quot;],
-  [&quot;XOR gate output 1 kab deta hai (2 inputs)?&quot;,&quot;Inputs same hon&quot;,&quot;Inputs different hon&quot;,&quot;Dono 0 hon&quot;,&quot;Always&quot;,&quot;B&quot;,&quot;XOR output 1 deta hai jab inputs alag hon.&quot;],
-  [&quot;Full adder kitne input bits add karta hai?&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;C&quot;,&quot;Full adder A, B aur carry-in ko add karta hai.&quot;],
-  [&quot;Boolean algebra mein 1 AND 0 ka result?&quot;,&quot;0&quot;,&quot;1&quot;,&quot;10&quot;,&quot;Undefined&quot;,&quot;A&quot;,&quot;AND operation mein 1 · 0 = 0.&quot;]
- ],
- &quot;Computer Organization&quot;: [
-  [&quot;CPU ka full form kya hai?&quot;,&quot;Central Processing Unit&quot;,&quot;Computer Primary Utility&quot;,&quot;Central Program User&quot;,&quot;Control Power Unit&quot;,&quot;A&quot;,&quot;CPU ka full form Central Processing Unit hai.&quot;],
-  [&quot;ALU ka main kaam kya hai?&quot;,&quot;Arithmetic aur logical operations&quot;,&quot;Printing&quot;,&quot;Internet routing&quot;,&quot;File scanning only&quot;,&quot;A&quot;,&quot;ALU arithmetic aur logic operations perform karta hai.&quot;],
-  [&quot;RAM kis prakaar ki memory hai?&quot;,&quot;Volatile&quot;,&quot;Permanent non-volatile&quot;,&quot;Optical only&quot;,&quot;Paper memory&quot;,&quot;A&quot;,&quot;Power band hone par RAM ka data aam taur par lost ho jaata hai.&quot;],
-  [&quot;Instruction execution ko control karne wala CPU part?&quot;,&quot;Control Unit&quot;,&quot;Mouse&quot;,&quot;Monitor&quot;,&quot;SSD&quot;,&quot;A&quot;,&quot;Control Unit instruction flow ko coordinate karti hai.&quot;],
-  [&quot;1 byte mein kitne bits hote hain?&quot;,&quot;4&quot;,&quot;8&quot;,&quot;16&quot;,&quot;32&quot;,&quot;B&quot;,&quot;1 byte = 8 bits.&quot;],
-  [&quot;Cache memory ka purpose kya hai?&quot;,&quot;Frequently used data ko fast access&quot;,&quot;Screen brightness&quot;,&quot;Permanent backup only&quot;,&quot;Printing&quot;,&quot;A&quot;,&quot;Cache CPU ko frequently needed data jaldi available karati hai.&quot;],
-  [&quot;ROM ka full form kya hai?&quot;,&quot;Read Only Memory&quot;,&quot;Random Output Machine&quot;,&quot;Run Only Mode&quot;,&quot;Read Open Memory&quot;,&quot;A&quot;,&quot;ROM ka full form Read Only Memory hai.&quot;],
-  [&quot;Computer ka main circuit board kya kehlata hai?&quot;,&quot;Motherboard&quot;,&quot;Keyboard&quot;,&quot;Router&quot;,&quot;Heatsink&quot;,&quot;A&quot;,&quot;Motherboard major components ko connect karta hai.&quot;],
-  [&quot;Binary 1111 ka decimal value kya hai?&quot;,&quot;12&quot;,&quot;13&quot;,&quot;14&quot;,&quot;15&quot;,&quot;D&quot;,&quot;8 + 4 + 2 + 1 = 15.&quot;],
-  [&quot;Input device ka example kaunsa hai?&quot;,&quot;Keyboard&quot;,&quot;Monitor&quot;,&quot;Speaker&quot;,&quot;Projector&quot;,&quot;A&quot;,&quot;Keyboard user se input leta hai.&quot;]
- ],
- &quot;English &amp; Communication&quot;: [
-  [&quot;Choose the correct spelling:&quot;,&quot;Enviroment&quot;,&quot;Environment&quot;,&quot;Envirnoment&quot;,&quot;Environmant&quot;,&quot;B&quot;,&quot;Correct spelling is Environment.&quot;],
-  [&quot;Synonym of &#x27;rapid&#x27; is:&quot;,&quot;Slow&quot;,&quot;Fast&quot;,&quot;Weak&quot;,&quot;Late&quot;,&quot;B&quot;,&quot;Rapid ka meaning fast/quick hai.&quot;],
-  [&quot;Choose the correct article: ___ apple&quot;,&quot;A&quot;,&quot;An&quot;,&quot;The only&quot;,&quot;No article always&quot;,&quot;B&quot;,&quot;Vowel sound se pehle an use hota hai.&quot;],
-  [&quot;Past tense of &#x27;write&#x27; is:&quot;,&quot;Writed&quot;,&quot;Written&quot;,&quot;Wrote&quot;,&quot;Writing&quot;,&quot;C&quot;,&quot;Write ka simple past &#x27;wrote&#x27; hai.&quot;],
-  [&quot;A formal email should usually have:&quot;,&quot;Clear subject&quot;,&quot;Only emojis&quot;,&quot;No greeting ever&quot;,&quot;All caps&quot;,&quot;A&quot;,&quot;Clear subject line email ka purpose batati hai.&quot;],
-  [&quot;Antonym of &#x27;increase&#x27; is:&quot;,&quot;Grow&quot;,&quot;Expand&quot;,&quot;Decrease&quot;,&quot;Raise&quot;,&quot;C&quot;,&quot;Decrease, increase ka opposite hai.&quot;],
-  [&quot;Choose the correct sentence:&quot;,&quot;He go to college.&quot;,&quot;He goes to college.&quot;,&quot;He going college.&quot;,&quot;He gone to college.&quot;,&quot;B&quot;,&quot;He/she/it ke saath simple present mein goes hota hai.&quot;],
-  [&quot;Communication includes:&quot;,&quot;Sender and receiver&quot;,&quot;Only a keyboard&quot;,&quot;Only silence&quot;,&quot;Only paper&quot;,&quot;A&quot;,&quot;Basic communication mein sender, message aur receiver hote hain.&quot;],
-  [&quot;Plural of &#x27;child&#x27; is:&quot;,&quot;Childs&quot;,&quot;Childes&quot;,&quot;Children&quot;,&quot;Childrens&quot;,&quot;C&quot;,&quot;Child ka plural children hai.&quot;],
-  [&quot;Which is a polite request?&quot;,&quot;Give it now!&quot;,&quot;Could you please help me?&quot;,&quot;You must do it.&quot;,&quot;Move!&quot;,&quot;B&quot;,&quot;Could you please... ek polite request hai.&quot;]
- ]
-};
-const subjects = Object.keys(bank);
-let selected = &quot;&quot;, questions = [], answers = [], idx = 0, timerId = null, remaining = 600, submitted = false;
-const $ = id =&gt; document.getElementById(id);
-const sections = [&quot;home&quot;,&quot;test&quot;,&quot;result&quot;,&quot;history&quot;];
-function show(id){sections.forEach(s=&gt;$(s).classList.toggle(&quot;hidden&quot;,s!==id));window.scrollTo(0,0)}
-function getHistory(){try{return JSON.parse(localStorage.getItem(&quot;polyCsePracticeHistory&quot;)||&quot;[]&quot;)}catch(e){return []}}
-function saveHistory(arr){try{localStorage.setItem(&quot;polyCsePracticeHistory&quot;,JSON.stringify(arr))}catch(e){}}
-function renderHome(){
- const hist=getHistory();$(&quot;testsCount&quot;).textContent=hist.length;
- $(&quot;bestScore&quot;).textContent=hist.length?Math.max(...hist.map(x=&gt;x.percent))+&quot;%&quot;:&quot;—&quot;;
- $(&quot;lastScore&quot;).textContent=hist.length?hist[0].percent+&quot;%&quot;:&quot;—&quot;;
- $(&quot;subjects&quot;).innerHTML=&quot;&quot;;
- subjects.forEach((s,i)=&gt;{const b=document.createElement(&quot;button&quot;);b.className=&quot;subject&quot;+(selected===s?&quot; selected&quot;:&quot;&quot;);b.innerHTML=`&lt;span class=&quot;emoji&quot;&gt;${[&quot;💻&quot;,&quot;🧱&quot;,&quot;🔌&quot;,&quot;🖥️&quot;,&quot;🗣️&quot;][i]}&lt;/span&gt;&lt;strong&gt;${s}&lt;/strong&gt;&lt;small&gt;${bank[s].length} practice MCQs available&lt;/small&gt;`;b.onclick=()=&gt;{selected=s;renderHome();};$(&quot;subjects&quot;).appendChild(b)});
- $(&quot;startBtn&quot;).disabled=!selected;$(&quot;startBtn&quot;).textContent=selected?`Start ${selected} Test →`:&quot;Choose a subject first&quot;;
-}
-function shuffle(a){let b=a.slice();for(let i=b.length-1;i&gt;0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
-function startTest(){
- if(!selected)return;
- const count=Math.min(Number($(&quot;count&quot;).value),bank[selected].length);
- questions=shuffle(bank[selected]).slice(0,count);answers=Array(count).fill(null);idx=0;remaining=Number($(&quot;duration&quot;).value)*60;submitted=false;
- $(&quot;testSubject&quot;).textContent=selected;$(&quot;submitBtn&quot;).disabled=false;show(&quot;test&quot;);renderQuestion();updateTimer();
- clearInterval(timerId);timerId=setInterval(()=&gt;{remaining--;updateTimer();if(remaining&lt;=0)finishTest(true)},1000);
-}
-function updateTimer(){let m=Math.floor(remaining/60),s=remaining%60;$(&quot;timer&quot;).textContent=String(m).padStart(2,&quot;0&quot;)+&quot;:&quot;+String(s).padStart(2,&quot;0&quot;);$(&quot;timer&quot;).classList.toggle(&quot;warn&quot;,remaining&lt;=60)}
-function renderQuestion(){
- const q=questions[idx];$(&quot;qCounter&quot;).textContent=`Question ${idx+1} of ${questions.length}`;$(&quot;progressFill&quot;).style.width=((idx+1)/questions.length*100)+&quot;%&quot;;$(&quot;questionText&quot;).textContent=q[0];$(&quot;options&quot;).innerHTML=&quot;&quot;;
- q.slice(1,5).forEach((opt,i)=&gt;{const b=document.createElement(&quot;button&quot;);b.className=&quot;option&quot;+(answers[idx]===i?&quot; chosen&quot;:&quot;&quot;);b.textContent=String.fromCharCode(65+i)+&quot;. &quot;+opt;b.onclick=()=&gt;{answers[idx]=i;renderQuestion()};$(&quot;options&quot;).appendChild(b)});
- $(&quot;prevBtn&quot;).disabled=idx===0;$(&quot;nextBtn&quot;).textContent=idx===questions.length-1?&quot;Last question&quot;:&quot;Next →&quot;;
- $(&quot;palette&quot;).innerHTML=&quot;&quot;;questions.forEach((_,i)=&gt;{const b=document.createElement(&quot;button&quot;);b.className=&quot;dot&quot;+(answers[i]!==null?&quot; done&quot;:&quot;&quot;)+(idx===i?&quot; current&quot;:&quot;&quot;);b.textContent=i+1;b.onclick=()=&gt;{idx=i;renderQuestion()};$(&quot;palette&quot;).appendChild(b)});
-}
-function finishTest(auto=false){
- if(submitted)return;submitted=true;clearInterval(timerId);
- let correct=0;questions.forEach((q,i)=&gt;{if(answers[i]===q[5].charCodeAt(0)-65)correct++});
- const wrong=answers.filter((a,i)=&gt;a!==null&amp;&amp;a!==questions[i][5].charCodeAt(0)-65).length,unanswered=answers.filter(a=&gt;a===null).length;
- const percent=Math.round(correct/questions.length*100);
- $(&quot;resultTitle&quot;).textContent=auto?&quot;Time up — test auto-submitted!&quot;:&quot;Test submitted successfully!&quot;;
- $(&quot;scoreText&quot;).textContent=`${correct}/${questions.length}`;$(&quot;resultLine&quot;).textContent=`${selected} · Score: ${percent}% · Time used: ${formatTime(Number($(&quot;duration&quot;).value)*60-remaining)}`;
- $(&quot;correctCount&quot;).textContent=correct;$(&quot;wrongCount&quot;).textContent=wrong;$(&quot;unansweredCount&quot;).textContent=unanswered;
- const hist=getHistory();hist.unshift({subject:selected,correct,total:questions.length,percent,date:new Date().toLocaleString(),auto});saveHistory(hist.slice(0,30));
- $(&quot;review&quot;).innerHTML=&quot;&quot;;questions.forEach((q,i)=&gt;{const right=q[5].charCodeAt(0)-65;const box=document.createElement(&quot;div&quot;);box.className=&quot;review-item&quot;;const h=document.createElement(&quot;strong&quot;);h.textContent=`Q${i+1}. ${q[0]}`;box.appendChild(h);const p=document.createElement(&quot;p&quot;);p.className=answers[i]===right?&quot;correct&quot;:&quot;wrong&quot;;p.textContent=&quot;Your answer: &quot;+(answers[i]===null?&quot;Not answered&quot;:String.fromCharCode(65+answers[i])+&quot;. &quot;+q[answers[i]+1]);box.appendChild(p);const ans=document.createElement(&quot;p&quot;);ans.className=&quot;correct&quot;;ans.textContent=`Correct answer: ${q[5]}. ${q[right+1]}`;box.appendChild(ans);const ex=document.createElement(&quot;p&quot;);ex.className=&quot;muted&quot;;ex.textContent=q[6];box.appendChild(ex);$(&quot;review&quot;).appendChild(box)});
- show(&quot;result&quot;);renderHome();
-}
-function formatTime(s){s=Math.max(0,s);return `${Math.floor(s/60)}m ${s%60}s`}
-function showHistory(){const hist=getHistory();$(&quot;historyList&quot;).innerHTML=&quot;&quot;;if(!hist.length){$(&quot;historyList&quot;).innerHTML=&#x27;&lt;p class=&quot;muted&quot;&gt;Abhi koi test result saved nahi hai. Pehla test complete karein!&lt;/p&gt;&#x27;}else hist.forEach(h=&gt;{const d=document.createElement(&quot;div&quot;);d.className=&quot;review-item&quot;;const t=document.createElement(&quot;strong&quot;);t.textContent=h.subject;d.appendChild(t);const p=document.createElement(&quot;p&quot;);p.textContent=`${h.correct}/${h.total} marks · ${h.percent}% · ${h.date}`;d.appendChild(p);$(&quot;historyList&quot;).appendChild(d)});show(&quot;history&quot;)}
-$(&quot;startBtn&quot;).onclick=startTest;$(&quot;prevBtn&quot;).onclick=()=&gt;{if(idx&gt;0){idx--;renderQuestion()}};$(&quot;nextBtn&quot;).onclick=()=&gt;{if(idx&lt;questions.length-1){idx++;renderQuestion()}};
-$(&quot;submitBtn&quot;).onclick=()=&gt;{if(confirm(&quot;Kya aap test submit karna chahte hain?&quot;))finishTest(false)};
-$(&quot;homeBtn&quot;).onclick=()=&gt;{if(confirm(&quot;Test chhodkar dashboard par jana hai? Aapka current test result save nahi hoga.&quot;)){clearInterval(timerId);show(&quot;home&quot;);renderHome()}};
-$(&quot;retryBtn&quot;).onclick=startTest;$(&quot;backBtn&quot;).onclick=()=&gt;{show(&quot;home&quot;);renderHome()};$(&quot;historyBtn&quot;).onclick=showHistory;$(&quot;historyBack&quot;).onclick=()=&gt;{show(&quot;home&quot;);renderHome()};
-$(&quot;clearHistory&quot;).onclick=()=&gt;{if(confirm(&quot;Saved progress delete kar dein?&quot;)){saveHistory([]);showHistory();renderHome()}};
-renderHome();
-&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;"></iframe>
-  </section>
-
   <!-- ===== IMPORTANT QUESTIONS (public practice page) ===== -->
   <section id="practiceView" class="hidden">
     <div class="card">
@@ -308,6 +180,114 @@ renderHome();
       <div id="pdfList"></div>
     </div>
     <p class="note">Ye practice ke liye hain. Exam mein kya aayega, ye pakka nahi hai.</p>
+  </section>
+
+  <!-- ===== MOCK TEST (student practice portal) ===== -->
+  <section id="mockView" class="hidden">
+    <div class="tz-wrap">
+      <div class="tz-top">
+        <button id="tzBackBtn" class="tz-round hidden" aria-label="Back">←</button>
+        <div class="tz-title" id="tzTitle">Mock Test Series</div>
+      </div>
+
+      <div class="tz-hero">
+        <h2>Your learning journey</h2>
+        <p>Branch folder chunein, subject ka test dein, aur result aapki history mein save ho jayega.</p>
+      </div>
+
+      <div class="tz-card" id="tzId">
+        <div id="tzIdSet" class="hidden">
+          <div class="tz-muted">Apna roll number daalein. Aapke test ka result isi roll number se save hoga.</div>
+          <div class="tz-row" style="margin-top:10px">
+            <input id="tzRoll" placeholder="Roll number" autocomplete="off">
+            <input id="tzName" placeholder="Naam (optional)" autocomplete="off">
+            <button id="tzSaveId">Save</button>
+          </div>
+          <div id="tzIdError" class="tz-err"></div>
+        </div>
+        <div id="tzIdShow" class="tz-row hidden">
+          <div style="flex:1">
+            <div class="tz-muted">Aapka roll number</div>
+            <strong id="tzRollShow"></strong>
+          </div>
+          <button class="tz-ghost" id="tzChangeId">Badlein</button>
+        </div>
+      </div>
+
+      <!-- HOME -->
+      <div id="tz-home">
+        <div class="tz-stats">
+          <div class="tz-stat"><strong id="tzAttempted">0</strong><span>Tests attempted</span></div>
+          <div class="tz-stat"><strong id="tzBest">—</strong><span>Best score</span></div>
+          <div class="tz-stat"><strong id="tzAvg">—</strong><span>Average</span></div>
+        </div>
+
+        <div class="tz-card">
+          <h3>Your test history</h3>
+          <div id="tzHistory" class="tz-muted">Roll number save karne par history dikhegi.</div>
+        </div>
+
+        <div class="tz-card">
+          <h3>Branch folders</h3>
+          <input id="tzSearch" class="tz-full" placeholder="Branch ya subject search karein..." autocomplete="off">
+          <div id="tzFolders" class="tz-grid"></div>
+        </div>
+      </div>
+
+      <!-- FOLDER (subjects) -->
+      <div id="tz-folder" class="hidden">
+        <div class="tz-card">
+          <h3 id="tzFolderName"></h3>
+          <div id="tzSubjects" class="tz-grid"></div>
+        </div>
+      </div>
+
+      <!-- TEST -->
+      <div id="tz-test" class="hidden">
+        <div class="tz-card">
+          <div class="tz-row" style="justify-content:space-between">
+            <div>
+              <div class="tz-muted" id="tzTSub"></div>
+              <strong id="tzQNo"></strong>
+            </div>
+            <div id="tzTimer" class="tz-timer">10:00</div>
+          </div>
+          <div class="tz-progress"><div id="tzFill"></div></div>
+          <div id="tzQText" class="tz-q"></div>
+          <div id="tzOpts" class="tz-opts"></div>
+          <div class="tz-row" style="justify-content:space-between; margin-top:14px">
+            <button class="tz-ghost" id="tzPrev">← Previous</button>
+            <button id="tzNext">Next →</button>
+          </div>
+          <div class="tz-muted" style="margin-top:14px">Question palette (green = answered)</div>
+          <div id="tzPalette" class="tz-dots"></div>
+          <div class="tz-row" style="margin-top:16px">
+            <button id="tzSubmit" class="tz-red">Submit Test</button>
+            <button class="tz-ghost" id="tzExit">Exit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div id="tz-result" class="hidden">
+        <div class="tz-card">
+          <div class="tz-muted" id="tzRTitle">TEST RESULT</div>
+          <div class="tz-score" id="tzScore"></div>
+          <p class="tz-muted" id="tzRLine"></p>
+          <p class="tz-muted" id="tzSaveNote"></p>
+          <div class="tz-row" style="margin-top:12px">
+            <button id="tzRetry">Phir se test dein</button>
+            <button class="tz-ghost" id="tzRHome">Folders par jayein</button>
+          </div>
+        </div>
+        <div class="tz-card">
+          <h3>Answer review</h3>
+          <div id="tzReview"></div>
+        </div>
+      </div>
+
+      <p class="tz-note">Ye practice ke liye hain. Official BTEUP paper nahi hai.</p>
+    </div>
   </section>
 
   <!-- ===== ADMIN ===== -->
@@ -462,7 +442,7 @@ renderHome();
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot, writeBatch }
+  import { getFirestore, collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc, onSnapshot, writeBatch }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ====== FIREBASE CONFIG ======
@@ -807,7 +787,8 @@ renderHome();
   }
 
   function exportData() {
-    const blob = new Blob([JSON.stringify(students, null, 2)], { type: "application/json" });
+    const data = students.map(({ roll, ...rest }) => ({ roll, ...rest }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "results-backup.json";
@@ -1119,11 +1100,12 @@ renderHome();
     $("publicView").classList.toggle("hidden", page !== "result");
     $("practiceView").classList.toggle("hidden", page !== "practice");
     $("mockView").classList.toggle("hidden", page !== "mock");
-    $("mockBtn").textContent = page === "mock" ? "Result page" : "Mock Test";
     $("adminView").classList.toggle("hidden", page !== "admin");
     $("toggleViewBtn").title = page === "admin" ? "Result page par jaayein" : "Admin Panel";
     $("practiceBtn").textContent = page === "practice" ? "Result page" : "Important Questions";
+    $("mockBtn").textContent = page === "mock" ? "Result page" : "Mock Test";
     if (page === "admin") refreshAdminUI();
+    if (page === "mock") tzOnShow();
   }
 
   function showTab(tab) {
@@ -1228,6 +1210,369 @@ renderHome();
   $("pdfAdminList").addEventListener("click", e => {
     if (e.target.classList.contains("p-del")) deletePdf(e.target.dataset.id);
   });
+
+  /* ---------- MOCK TEST SERIES (native, history Firebase mein) ---------- */
+  // Naya branch folder ya subject add karne ke liye yahan entry banayein.
+  // Question format: [question, optA, optB, optC, optD, correctLetter, explanation]
+  const TZ_BANK = {
+   "Programming in C": [
+    ["C language mein program execution ka entry point kya hota hai?","main()","start()","run()","init()","A","C program ka execution aam taur par main() function se shuru hota hai."],
+    ["Integer value store karne ke liye kaunsa data type use hota hai?","char","int","float","double","B","int whole-number values store karta hai."],
+    ["C mein statement ke end par aam taur par kya lagta hai?","Colon (:)","Comma (,)","Semicolon (;)","Full stop (.)","C","Semicolon statement ko terminate karta hai."],
+    ["printf() function kis header file mein declare hota hai?","stdio.h","math.h","string.h","stdlib.h","A","printf() ke liye stdio.h include ki jaati hai."],
+    ["Array ka first index aam taur par kya hota hai?","1","-1","0","2","C","C arrays zero-based indexing use karte hain."],
+    ["Equality compare karne ke liye kaunsa operator hai?","=","==","!=","<=","B","== equality check karta hai; = assignment ke liye hai."],
+    ["Loop ko turant terminate karne ke liye kaunsa keyword use hota hai?","skip","stop","break","exitloop","C","break current loop ya switch se bahar nikalta hai."],
+    ["Character constant ko kis quotes mein likhte hain?","Single quotes","Double quotes","Square brackets","Curly braces","A","Example: 'A' ek character constant hai."],
+    ["Function se value wapas bhejne ka keyword kya hai?","send","return","back","value","B","return caller ko value de sakta hai."],
+    ["Logical AND operator ka symbol kya hai?","&","||","&&","!","C","&& logical AND operator hai."],
+    ["C mein comments ka single-line style kaunsa hai?","##","//","<!-- -->","**","B","// ke baad wali line ko comment maana jaata hai."],
+    ["Pointer variable aam taur par kya store karta hai?","Character","Memory address","Only decimal","File name","B","Pointer kisi object/function ka address hold kar sakta hai."]
+   ],
+   "Data Structure": [
+    ["Stack kis principle par kaam karta hai?","FIFO","LIFO","Random","Priority only","B","Stack Last In, First Out principle use karta hai."],
+    ["Queue ka basic principle kya hai?","LIFO","FILO only","FIFO","Binary order","C","Queue First In, First Out principle follow karti hai."],
+    ["Binary search ke liye data aam taur par kaisa hona chahiye?","Sorted","Reverse only","Random","Duplicate-free only","A","Binary search sorted data par kaam karta hai."],
+    ["Linked list ke node mein aam taur par kya hota hai?","Data aur link","Sirf index","Sirf loop","Sirf file","A","Node data ke saath agle node ka link/address rakhta hai."],
+    ["Tree ka topmost node kya kehlata hai?","Leaf","Root","Edge","Sibling","B","Root tree ka topmost node hota hai."],
+    ["Graph mein vertices ko kya connect karta hai?","Stacks","Edges","Arrays only","Keys","B","Edges vertices ke beech connections dikhate hain."],
+    ["Stack mein insertion operation kya kehlata hai?","Enqueue","Push","Dequeue","Traverse","B","Push stack mein item add karta hai."],
+    ["Queue se item remove karne ka operation kya hai?","Push","Pop","Dequeue","Insert","C","Dequeue front se item remove karta hai."],
+    ["Linear search mein elements kaise check hote hain?","Ek-ek karke","Middle only","Sorted pairs only","Hash only","A","Linear search elements ko sequence mein inspect karta hai."],
+    ["Array elements aam taur par memory mein kaise hote hain?","Contiguous","Hamesha scattered","Sirf disk par","Network par","A","Array elements contiguous memory locations mein store hote hain."]
+   ],
+   "Digital Electronics": [
+    ["Binary number system ka base kya hai?","2","8","10","16","A","Binary system mein 0 aur 1 digits hote hain."],
+    ["AND gate ka output 1 kab hota hai?","Koi ek input 1 ho","Sab inputs 1 hon","Sab inputs 0 hon","Inputs different hon","B","AND gate tab 1 deta hai jab sab inputs 1 hon."],
+    ["NOT gate kya karta hai?","Addition","Input invert","Memory store","Multiplication only","B","NOT gate input ka complement deta hai."],
+    ["Decimal 10 ka binary representation kya hai?","1010","1001","1110","1100","A","Decimal 10 = binary 1010."],
+    ["OR gate ka output 0 kab hota hai?","Any input 1","All inputs 0","Inputs same","Never","B","OR gate sirf tab 0 deta hai jab sab inputs 0 hon."],
+    ["Flip-flop kis tarah ka circuit hai?","Memory element","Amplifier only","Decoder only","Power supply","A","Flip-flop ek bit store kar sakta hai."],
+    ["Hexadecimal number system ka base kya hai?","2","8","10","16","D","Hexadecimal base 16 use karta hai."],
+    ["XOR gate output 1 kab deta hai (2 inputs)?","Inputs same hon","Inputs different hon","Dono 0 hon","Always","B","XOR output 1 deta hai jab inputs alag hon."],
+    ["Full adder kitne input bits add karta hai?","1","2","3","4","C","Full adder A, B aur carry-in ko add karta hai."],
+    ["Boolean algebra mein 1 AND 0 ka result?","0","1","10","Undefined","A","AND operation mein 1 · 0 = 0."]
+   ],
+   "Computer Organization": [
+    ["CPU ka full form kya hai?","Central Processing Unit","Computer Primary Utility","Central Program User","Control Power Unit","A","CPU ka full form Central Processing Unit hai."],
+    ["ALU ka main kaam kya hai?","Arithmetic aur logical operations","Printing","Internet routing","File scanning only","A","ALU arithmetic aur logic operations perform karta hai."],
+    ["RAM kis prakaar ki memory hai?","Volatile","Permanent non-volatile","Optical only","Paper memory","A","Power band hone par RAM ka data aam taur par lost ho jaata hai."],
+    ["Instruction execution ko control karne wala CPU part?","Control Unit","Mouse","Monitor","SSD","A","Control Unit instruction flow ko coordinate karti hai."],
+    ["1 byte mein kitne bits hote hain?","4","8","16","32","B","1 byte = 8 bits."],
+    ["Cache memory ka purpose kya hai?","Frequently used data ko fast access","Screen brightness","Permanent backup only","Printing","A","Cache CPU ko frequently needed data jaldi available karati hai."],
+    ["ROM ka full form kya hai?","Read Only Memory","Random Output Machine","Run Only Mode","Read Open Memory","A","ROM ka full form Read Only Memory hai."],
+    ["Computer ka main circuit board kya kehlata hai?","Motherboard","Keyboard","Router","Heatsink","A","Motherboard major components ko connect karta hai."],
+    ["Binary 1111 ka decimal value kya hai?","12","13","14","15","D","8 + 4 + 2 + 1 = 15."],
+    ["Input device ka example kaunsa hai?","Keyboard","Monitor","Speaker","Projector","A","Keyboard user se input leta hai."]
+   ],
+   "English & Communication": [
+    ["Choose the correct spelling:","Enviroment","Environment","Envirnoment","Environmant","B","Correct spelling is Environment."],
+    ["Synonym of 'rapid' is:","Slow","Fast","Weak","Late","B","Rapid ka meaning fast/quick hai."],
+    ["Choose the correct article: ___ apple","A","An","The only","No article always","B","Vowel sound se pehle an use hota hai."],
+    ["Past tense of 'write' is:","Writed","Written","Wrote","Writing","C","Write ka simple past 'wrote' hai."],
+    ["A formal email should usually have:","Clear subject","Only emojis","No greeting ever","All caps","A","Clear subject line email ka purpose batati hai."],
+    ["Antonym of 'increase' is:","Grow","Expand","Decrease","Raise","C","Decrease, increase ka opposite hai."],
+    ["Choose the correct sentence:","He go to college.","He goes to college.","He going college.","He gone to college.","B","He/she/it ke saath simple present mein goes hota hai."],
+    ["Communication includes:","Sender and receiver","Only a keyboard","Only silence","Only paper","A","Basic communication mein sender, message aur receiver hote hain."],
+    ["Plural of 'child' is:","Childs","Childes","Children","Childrens","C","Child ka plural children hai."],
+    ["Which is a polite request?","Give it now!","Could you please help me?","You must do it.","Move!","B","Could you please... ek polite request hai."]
+   ]
+  };
+
+  // Branch folders. Jis folder mein subjects nahi hain, wahan "abhi add nahi hue" dikhega.
+  const TZ_FOLDERS = [
+    { name: "1st Year", note: "Common", subjects: {} },
+    { name: "CSE", note: "3rd Sem", subjects: TZ_BANK },
+    { name: "Mechanical", note: "", subjects: {} },
+    { name: "Civil", note: "", subjects: {} }
+  ];
+
+  const TZ_QCOUNT = 10;
+  const TZ_SECONDS = 600;
+  const TZ_ID_KEY = "tzRoll";
+  const TZ_NAME_KEY = "tzName";
+
+  let tzRoll = "", tzName = "";
+  let tzHist = [];
+  let tzFolderIdx = -1, tzSubject = "", tzQs = [], tzAns = [], tzIdx = 0, tzLeft = 0, tzClock = null, tzDone = true;
+  let tzView = "home";
+
+  const tzEl = id => document.getElementById(id);
+  function tzGet(k) { try { return localStorage.getItem(k) || ""; } catch { return ""; } }
+  function tzPut(k, v) { try { localStorage.setItem(k, v); } catch {} }
+  function tzShuffle(a) {
+    const b = a.slice();
+    for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+    return b;
+  }
+  function tzPct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+
+  function tzShowView(v) {
+    tzView = v;
+    ["home", "folder", "test", "result"].forEach(x => tzEl("tz-" + x).classList.toggle("hidden", x !== v));
+    tzEl("tzBackBtn").classList.toggle("hidden", v === "home");
+    const titles = {
+      home: "Mock Test Series",
+      folder: TZ_FOLDERS[tzFolderIdx] ? TZ_FOLDERS[tzFolderIdx].name : "",
+      test: tzSubject,
+      result: "Test result"
+    };
+    tzEl("tzTitle").textContent = titles[v] || "";
+    window.scrollTo(0, 0);
+  }
+
+  /* ----- roll number (identity) ----- */
+  function tzRenderId() {
+    const has = !!tzRoll;
+    tzEl("tzIdSet").classList.toggle("hidden", has);
+    tzEl("tzIdShow").classList.toggle("hidden", !has);
+    tzEl("tzRollShow").textContent = has ? tzRoll + (tzName ? " · " + tzName : "") : "";
+  }
+  function tzSaveId() {
+    const roll = tzEl("tzRoll").value.trim();
+    const name = tzEl("tzName").value.trim();
+    if (!/^[A-Za-z0-9\-_\/]{1,30}$/.test(roll)) {
+      tzEl("tzIdError").textContent = "Sahi roll number daalein (letters, numbers, - _ / allowed).";
+      return;
+    }
+    tzRoll = roll;
+    tzName = name;
+    tzPut(TZ_ID_KEY, roll);
+    tzPut(TZ_NAME_KEY, name);
+    tzEl("tzIdError").textContent = "";
+    tzRenderId();
+    tzLoadHistory();
+  }
+
+  /* ----- history (Firestore: testAttempts) ----- */
+  async function tzLoadHistory() {
+    if (!tzRoll) {
+      tzHist = [];
+      tzRenderStats();
+      tzEl("tzHistory").textContent = "Roll number save karne par history dikhegi.";
+      return;
+    }
+    tzEl("tzHistory").textContent = "Load ho raha hai...";
+    try {
+      const snap = await getDocs(query(collection(db, "testAttempts"), where("roll", "==", tzRoll)));
+      tzHist = snap.docs.map(d => d.data()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      tzRenderStats();
+      tzRenderHistory();
+    } catch (e) {
+      console.error(e);
+      tzEl("tzHistory").textContent = "History load nahi ho paayi. Internet check karein.";
+    }
+  }
+  function tzRenderStats() {
+    tzEl("tzAttempted").textContent = tzHist.length;
+    tzEl("tzBest").textContent = tzHist.length ? Math.max(...tzHist.map(h => h.percent)) + "%" : "—";
+    tzEl("tzAvg").textContent = tzHist.length
+      ? Math.round(tzHist.reduce((s, h) => s + h.percent, 0) / tzHist.length) + "%"
+      : "—";
+  }
+  function tzRenderHistory() {
+    const box = tzEl("tzHistory");
+    if (!tzHist.length) {
+      box.textContent = "Abhi koi test nahi diya. Koi branch folder kholkar test shuru karein.";
+      return;
+    }
+    box.innerHTML = tzHist.slice(0, 20).map(h => `
+      <div class="tz-hrow">
+        <div>
+          <strong>${esc(h.subject)}</strong>
+          <div class="tz-muted">${esc(h.folder || "")} · ${esc(h.date || "")}</div>
+        </div>
+        <div class="tz-score-sm">${h.correct}/${h.total} · ${h.percent}%</div>
+      </div>`).join("");
+  }
+
+  /* ----- folders & subjects ----- */
+  function tzRenderFolders() {
+    const q = tzEl("tzSearch").value.trim().toLowerCase();
+    const list = TZ_FOLDERS
+      .map((f, i) => ({ f, i }))
+      .filter(({ f }) => !q || f.name.toLowerCase().includes(q) || Object.keys(f.subjects).some(s => s.toLowerCase().includes(q)));
+    tzEl("tzFolders").innerHTML = list.map(({ f, i }) => `
+      <button class="tz-folder" data-i="${i}">
+        <span class="tz-fico">📁</span>
+        <strong>${esc(f.name)}</strong>
+        <small>${Object.keys(f.subjects).length} items${f.note ? " · " + esc(f.note) : ""}</small>
+      </button>`).join("") || `<p class="tz-muted">Kuch nahi mila.</p>`;
+  }
+  function tzOpenFolder(i) {
+    tzFolderIdx = i;
+    const f = TZ_FOLDERS[i];
+    const names = Object.keys(f.subjects);
+    tzEl("tzFolderName").textContent = f.name;
+    tzEl("tzSubjects").innerHTML = names.length
+      ? names.map(s => `
+        <button class="tz-folder" data-s="${esc(s)}">
+          <span class="tz-fico">📝</span>
+          <strong>${esc(s)}</strong>
+          <small>${f.subjects[s].length} MCQs · ${TZ_QCOUNT} questions · 10 min</small>
+        </button>`).join("")
+      : `<p class="tz-muted">Is branch ke test abhi add nahi hue.</p>`;
+    tzShowView("folder");
+  }
+
+  /* ----- test ----- */
+  function tzTick() {
+    const m = Math.floor(tzLeft / 60), s = tzLeft % 60;
+    const t = tzEl("tzTimer");
+    t.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    t.classList.toggle("warn", tzLeft <= 60);
+  }
+  function tzStart(subject) {
+    if (!tzRoll) {
+      tzShowView("home");
+      tzEl("tzIdError").textContent = "Pehle upar roll number save karein.";
+      tzEl("tzRoll").focus();
+      return;
+    }
+    tzSubject = subject;
+    const pool = TZ_FOLDERS[tzFolderIdx].subjects[subject];
+    tzQs = tzShuffle(pool).slice(0, TZ_QCOUNT);
+    tzAns = tzQs.map(() => null);
+    tzIdx = 0;
+    tzLeft = TZ_SECONDS;
+    tzDone = false;
+    clearInterval(tzClock);
+    tzClock = setInterval(() => {
+      tzLeft--;
+      tzTick();
+      if (tzLeft <= 0) tzFinish(true);
+    }, 1000);
+    tzEl("tzTSub").textContent = `${TZ_FOLDERS[tzFolderIdx].name} · ${subject}`;
+    tzEl("tzSubmit").disabled = false;
+    tzShowView("test");
+    tzRenderQ();
+    tzTick();
+  }
+  function tzRenderQ() {
+    const q = tzQs[tzIdx];
+    tzEl("tzQNo").textContent = `Question ${tzIdx + 1} of ${tzQs.length}`;
+    tzEl("tzFill").style.width = ((tzIdx + 1) / tzQs.length * 100) + "%";
+    tzEl("tzQText").textContent = q[0];
+    const opts = tzEl("tzOpts");
+    opts.innerHTML = "";
+    q.slice(1, 5).forEach((opt, i) => {
+      const b = document.createElement("button");
+      b.className = "tz-opt" + (tzAns[tzIdx] === i ? " chosen" : "");
+      b.textContent = String.fromCharCode(65 + i) + ". " + opt;
+      b.onclick = () => { tzAns[tzIdx] = i; tzRenderQ(); };
+      opts.appendChild(b);
+    });
+    tzEl("tzPrev").disabled = tzIdx === 0;
+    tzEl("tzNext").disabled = tzIdx === tzQs.length - 1;
+    const pal = tzEl("tzPalette");
+    pal.innerHTML = "";
+    tzQs.forEach((_, i) => {
+      const b = document.createElement("button");
+      b.className = "tz-dot" + (tzAns[i] !== null ? " done" : "") + (i === tzIdx ? " cur" : "");
+      b.textContent = i + 1;
+      b.onclick = () => { tzIdx = i; tzRenderQ(); };
+      pal.appendChild(b);
+    });
+  }
+  async function tzFinish(auto = false) {
+    if (tzDone) return;
+    tzDone = true;
+    clearInterval(tzClock);
+    const total = tzQs.length;
+    let correct = 0;
+    tzQs.forEach((q, i) => { if (tzAns[i] === q[5].charCodeAt(0) - 65) correct++; });
+    const percent = tzPct(correct, total);
+    const folder = TZ_FOLDERS[tzFolderIdx].name;
+    const used = Math.max(0, TZ_SECONDS - tzLeft);
+
+    tzEl("tzRTitle").textContent = auto ? "Time up — test auto-submit ho gaya" : "Test submit ho gaya";
+    tzEl("tzScore").textContent = `${correct} / ${total}  (${percent}%)`;
+    tzEl("tzRLine").textContent = `${folder} · ${tzSubject} · Time used: ${Math.floor(used / 60)}m ${used % 60}s`;
+    tzEl("tzReview").innerHTML = tzQs.map((q, i) => {
+      const right = q[5].charCodeAt(0) - 65;
+      const mine = tzAns[i];
+      return `<div class="tz-rev">
+        <strong>Q${i + 1}. ${esc(q[0])}</strong>
+        <p class="${mine === right ? "ok-t" : "bad-t"}">Your answer: ${mine === null ? "Not answered" : esc(String.fromCharCode(65 + mine) + ". " + q[mine + 1])}</p>
+        <p class="ok-t">Correct answer: ${esc(q[5] + ". " + q[right + 1])}</p>
+        <p class="tz-muted">${esc(q[6])}</p>
+      </div>`;
+    }).join("");
+    tzEl("tzSaveNote").textContent = "Result save ho raha hai...";
+    tzShowView("result");
+
+    try {
+      await addDoc(collection(db, "testAttempts"), {
+        roll: tzRoll,
+        name: tzName,
+        folder,
+        subject: tzSubject,
+        correct,
+        total,
+        percent,
+        auto,
+        createdAt: Date.now(),
+        date: new Date().toLocaleString("en-IN")
+      });
+      tzEl("tzSaveNote").textContent = "Result aapki history mein save ho gaya.";
+      tzLoadHistory();
+    } catch (e) {
+      console.error(e);
+      tzEl("tzSaveNote").textContent = "Result save nahi ho paaya. Internet check karke dobara test dein.";
+    }
+  }
+  function tzExit() {
+    if (!confirm("Test chhodkar folder par jaana hai? Ye test save nahi hoga.")) return;
+    tzDone = true;
+    clearInterval(tzClock);
+    tzShowView("folder");
+  }
+  function tzBack() {
+    if (tzView === "test") return tzExit();
+    if (tzView === "folder" || tzView === "result") tzShowView("home");
+  }
+
+  function tzOnShow() {
+    tzRenderId();
+    tzRenderFolders();
+    tzLoadHistory();
+    tzShowView(tzView);
+  }
+
+  /* ----- events ----- */
+  tzEl("tzSaveId").addEventListener("click", tzSaveId);
+  tzEl("tzRoll").addEventListener("keydown", e => { if (e.key === "Enter") tzSaveId(); });
+  tzEl("tzChangeId").addEventListener("click", () => {
+    tzEl("tzRoll").value = tzRoll;
+    tzEl("tzName").value = tzName;
+    tzEl("tzIdSet").classList.remove("hidden");
+    tzEl("tzIdShow").classList.add("hidden");
+  });
+  tzEl("tzSearch").addEventListener("input", tzRenderFolders);
+  tzEl("tzFolders").addEventListener("click", e => {
+    const b = e.target.closest("[data-i]");
+    if (b) tzOpenFolder(Number(b.dataset.i));
+  });
+  tzEl("tzSubjects").addEventListener("click", e => {
+    const b = e.target.closest("[data-s]");
+    if (b) tzStart(b.dataset.s);
+  });
+  tzEl("tzPrev").addEventListener("click", () => { if (tzIdx > 0) { tzIdx--; tzRenderQ(); } });
+  tzEl("tzNext").addEventListener("click", () => { if (tzIdx < tzQs.length - 1) { tzIdx++; tzRenderQ(); } });
+  tzEl("tzSubmit").addEventListener("click", () => {
+    if (confirm("Kya aap test submit karna chahte hain?")) tzFinish(false);
+  });
+  tzEl("tzExit").addEventListener("click", tzExit);
+  tzEl("tzBackBtn").addEventListener("click", tzBack);
+  tzEl("tzRetry").addEventListener("click", () => tzStart(tzSubject));
+  tzEl("tzRHome").addEventListener("click", () => { tzShowView("home"); tzRenderFolders(); });
+
+  /* ----- init ----- */
+  tzRoll = tzGet(TZ_ID_KEY);
+  tzName = tzGet(TZ_NAME_KEY);
+  tzRenderId();
+  tzRenderFolders();
+  tzRenderStats();
 
   /* ---------- INIT ---------- */
   resetForm();
